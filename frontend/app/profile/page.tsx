@@ -54,6 +54,7 @@ export default function ProfilePage() {
         username={username}
         sidebarOpen={sidebarOpen}
         onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+        title="Your Profile"
       />
 
       <div className="container mx-auto px-4 py-4">
@@ -79,7 +80,7 @@ export default function ProfilePage() {
               <Input
                 id="username"
                 value={username}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 disabled={!isEditing}
               />
             </div>
@@ -90,7 +91,7 @@ export default function ProfilePage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={!isEditing}
               />
             </div>

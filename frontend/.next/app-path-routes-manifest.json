@@ -1,12 +1,14 @@
 {
   "/_not-found/page": "/_not-found",
-  "/dashboard/page": "/dashboard",
+  "/favicon.ico/route": "/favicon.ico",
   "/boards/[boardId]/page": "/boards/[boardId]",
-  "/settings/page": "/settings",
+  "/boards/page": "/boards",
+  "/dashboard/page": "/dashboard",
   "/page": "/",
+  "/settings/page": "/settings",
   "/profile/page": "/profile",
   "/register/page": "/register",
-  "/reset-password/page": "/reset-password",
   "/login/page": "/login",
+  "/reset-password/page": "/reset-password",
   "/forgot-password/page": "/forgot-password"
 }

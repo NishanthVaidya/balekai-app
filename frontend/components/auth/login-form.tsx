@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { signInWithGoogle, auth } from "@/lib/firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
-import type { ControllerRenderProps } from "react-hook-form"
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -49,11 +48,7 @@ export function LoginForm() {
       toast({ title: "Success", description: "Logged in successfully." })
       router.push("/boards")
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast({ title: "Login failed", description: error.message, variant: "destructive" })
-      } else {
-        toast({ title: "Login failed", description: String(error), variant: "destructive" })
-      }
+      toast({ title: "Login failed", description: typeof error === 'object' && error && 'message' in error ? (error as { message: string }).message : String(error), variant: "destructive" })
     } finally {
       setIsLoading(false)
     }
@@ -75,11 +70,7 @@ export function LoginForm() {
       toast({ title: "Success", description: "Logged in with Google." })
       router.push("/boards")
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast({ title: "Google login failed", description: err.message, variant: "destructive" })
-      } else {
-        toast({ title: "Google login failed", description: String(err), variant: "destructive" })
-      }
+      toast({ title: "Google login failed", description: typeof err === 'object' && err && 'message' in err ? (err as { message: string }).message : String(err), variant: "destructive" })
     }
   }
 
@@ -96,7 +87,7 @@ export function LoginForm() {
           <FormField
             control={form.control}
             name="email"
-            render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "email"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700">Email</FormLabel>
                 <FormControl>
@@ -111,7 +102,7 @@ export function LoginForm() {
           <FormField
             control={form.control}
             name="password"
-            render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "password"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <div className="flex justify-between items-center">
                   <FormLabel className="text-gray-700">Password</FormLabel>

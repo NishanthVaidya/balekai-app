@@ -97,6 +97,7 @@ export default function SettingsPage() {
         username={username}
         sidebarOpen={sidebarOpen}
         onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+        title="Settings"
       />
 
       <div className="container mx-auto px-4 py-4">

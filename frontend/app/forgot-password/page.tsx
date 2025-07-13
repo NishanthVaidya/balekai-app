@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
 
@@ -14,12 +15,14 @@ export default function ForgotPasswordPage() {
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Forgot password</h1>
           <p className="text-sm text-muted-foreground">
-            Enter your email address and we&apos;ll send you a password reset link.
+            Enter your email address and we&apos;ll send you a link to reset your password
           </p>
         </div>
         <ForgotPasswordForm />
         <p className="px-8 text-center text-sm text-muted-foreground">
-          Enter your email address and we&apos;ll send you a password reset link.
+          <Link href="/login" className="hover:text-brand underline underline-offset-4">
+            Back to login
+          </Link>
         </p>
       </div>
     </div>

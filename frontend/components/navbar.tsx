@@ -11,6 +11,7 @@ interface NavbarProps {
   username?: string
   sidebarOpen?: boolean
   onSidebarToggle?: () => void
+  title?: string // Add title prop
 }
 
 // Update the Navbar function to place the sidebar toggle before the Trello title
@@ -19,6 +20,7 @@ export function Navbar({
   username = "User",
   sidebarOpen = false,
   onSidebarToggle = () => {},
+  title = "Kardo", // Default to Kardo
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
@@ -46,7 +48,7 @@ export function Navbar({
             </button>
 
             <Link href="/boards" className="flex-shrink-0 flex items-center">
-              <span className="font-bold text-xl text-gray-900">Kardo</span>
+              <span className="font-bold text-xl text-gray-900">{title}</span>
             </Link>
 
             {/* Removed the Boards and Your Boards links */}

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import type { ControllerRenderProps } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -67,11 +66,7 @@ export function ForgotPasswordForm() {
         <div className="flex flex-col space-y-4 text-center">
           <Icons.mailCheck className="mx-auto h-12 w-12 text-primary" />
           <h3 className="font-semibold text-lg">Check your email</h3>
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            {emailSent
-              ? "If an account exists for that email, you'll receive a password reset link."
-              : "Enter your email address and we'll send you a password reset link."}
-          </p>
+          <p className="text-sm text-muted-foreground">We&apos;ve sent a password reset link to your email address.</p>
           <Button variant="outline" onClick={() => router.push("/login")} className="mt-4">
             Back to login
           </Button>
@@ -82,11 +77,11 @@ export function ForgotPasswordForm() {
             <FormField
               control={form.control}
               name="email"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "email"> }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="you@example.com" {...field} />
+                    <Input placeholder="name@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

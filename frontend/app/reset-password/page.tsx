@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Suspense } from "react"
 
 import { ResetPasswordForm } from "@/components/auth/reset-password-form"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Reset Password",
@@ -17,7 +17,7 @@ export default function ResetPasswordPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Reset password</h1>
           <p className="text-sm text-muted-foreground">Enter your new password</p>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
           <ResetPasswordForm />
         </Suspense>
         <p className="px-8 text-center text-sm text-muted-foreground">

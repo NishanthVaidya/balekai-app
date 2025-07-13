@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import Link from "next/link"
 import * as z from "zod"
-import type { ControllerRenderProps } from "react-hook-form"
 
 
 import { Button } from "@/components/ui/button"
@@ -51,11 +50,7 @@ export function RegisterForm() {
       toast({ title: "Success", description: "Registered successfully." })
       router.push("/boards")
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast({ title: "Registration failed", description: error.message, variant: "destructive" })
-      } else {
-        toast({ title: "Registration failed", description: String(error), variant: "destructive" })
-      }
+      toast({ title: "Registration failed", description: typeof error === 'object' && error && 'message' in error ? (error as { message: string }).message : String(error), variant: "destructive" })
     } finally {
       setIsLoading(false)
     }
@@ -77,11 +72,7 @@ export function RegisterForm() {
       toast({ title: "Success", description: "Signed in with Google." })
       router.push("/boards")
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast({ title: "Google sign-in failed", description: err.message, variant: "destructive" })
-      } else {
-        toast({ title: "Google sign-in failed", description: String(err), variant: "destructive" })
-      }
+      toast({ title: "Google sign-in failed", description: typeof err === 'object' && err && 'message' in err ? (err as { message: string }).message : String(err), variant: "destructive" })
     }
   }
 
@@ -93,7 +84,7 @@ export function RegisterForm() {
           <FormField
             control={form.control}
             name="name"
-            render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "name"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
@@ -106,7 +97,7 @@ export function RegisterForm() {
           <FormField
             control={form.control}
             name="email"
-            render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "email"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl><Input placeholder="you@example.com" {...field} /></FormControl>
@@ -119,7 +110,7 @@ export function RegisterForm() {
           <FormField
             control={form.control}
             name="password"
-            render={({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "password"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl><Input type="password" placeholder="********" {...field} /></FormControl>
