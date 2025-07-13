@@ -33,5 +33,3 @@ bin/
 
 ### Mac OS ###
 .DS_Store
-
-src/main/resources/firebase-service-account.json
