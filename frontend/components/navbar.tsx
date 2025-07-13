@@ -50,7 +50,7 @@ export function Navbar({
             </button>
 
             <Link href="/boards" className="flex-shrink-0 flex items-center">
-              <span className="font-bold text-xl text-gray-900">Trello</span>
+              <span className="font-bold text-xl text-gray-900">Kardo</span>
             </Link>
 
             {/* Removed the Boards and Your Boards links */}
