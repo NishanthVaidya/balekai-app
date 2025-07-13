@@ -138,7 +138,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>trelllo.TrellloApplication</mainClass>
+                    <mainClass>kardo.designpatterns.TrellloApplication</mainClass>
                 </configuration>
             </plugin>
 
