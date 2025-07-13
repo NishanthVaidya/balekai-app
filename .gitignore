@@ -29,4 +29,3 @@ bin/
 .DS_Store
 
 src/main/resources/firebase-service-account.json
-src/main/resources/firebase-service-account.json
