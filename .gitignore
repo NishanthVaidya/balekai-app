@@ -34,3 +34,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 node_modules
+frontend.zip
+frontend/node_modules/
