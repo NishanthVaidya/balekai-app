@@ -3,6 +3,12 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+
+# Secrets
+src/main/resources/firebase-service-account.json
+target/
+
+
 ### Eclipse ###
 .apt_generated
 .classpath
