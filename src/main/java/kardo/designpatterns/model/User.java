@@ -13,9 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // or AUTO, depending on DB
-   // @Column(name = "id", nullable = false)
-    private String id; // Now Firebase UID or assigned string
+    // Removed @GeneratedValue since we're using String IDs (Firebase UIDs)
+    private String id; // Firebase UID or manually assigned string
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
