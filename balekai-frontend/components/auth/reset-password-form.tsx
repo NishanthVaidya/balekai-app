@@ -36,7 +36,7 @@ export function ResetPasswordForm() {
       
       toast({ title: "Success", description: "Password reset successfully" })
       router.push("/login")
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Failed to reset password", variant: "destructive" })
     } finally {
       setIsLoading(false)

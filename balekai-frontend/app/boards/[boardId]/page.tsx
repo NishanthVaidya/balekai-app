@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import Link from "next/link"
 import api from "../../utils/api"
 import { ChevronLeft, ArrowLeft } from "lucide-react"
@@ -44,18 +44,16 @@ interface BoardSummary {
 
 export default function BoardPage() {
   const params = useParams()
-  const router = useRouter()
   const boardId = params?.boardId
   const [board, setBoard] = useState<Board | null>(null)
   const [allBoards, setAllBoards] = useState<BoardSummary[]>([])
   const [newListName, setNewListName] = useState("")
   const [newCardTitles, setNewCardTitles] = useState<Record<number, string>>({})
   const [draggedCard, setDraggedCard] = useState<{ card: Card; fromListId: number } | null>(null)
-  const [draggedListId, setDraggedListId] = useState<number | null>(null)
   const [showAddList, setShowAddList] = useState(false)
   const [tempIdCounter, setTempIdCounter] = useState(-1) // Negative IDs for temporary items
   const [sidebarOpen, setSidebarOpen] = useState(false) // Changed to false to keep sidebar collapsed by default
-  const [currentUserId, setCurrentUserId] = useState("test-user") // Replace with real auth in production
+  const [currentUserId] = useState("test-user") // Replace with real auth in production
 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null)
   const [cardHistory, setCardHistory] = useState<string[]>([])

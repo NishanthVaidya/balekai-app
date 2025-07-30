@@ -21,8 +21,6 @@ export function Navbar({
   username = "User",
   sidebarOpen = false,
   onSidebarToggle = () => {},
-  showBoardsLink = false, // Changed default to false
-  title,
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()

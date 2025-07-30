@@ -66,7 +66,7 @@ export function ForgotPasswordForm() {
         <div className="flex flex-col space-y-4 text-center">
           <Icons.mailCheck className="mx-auto h-12 w-12 text-primary" />
           <h3 className="font-semibold text-lg">Check your email</h3>
-          <p className="text-sm text-muted-foreground">We've sent a password reset link to your email address.</p>
+          <p className="text-sm text-muted-foreground">We&apos;ve sent a password reset link to your email address.</p>
           <Button variant="outline" onClick={() => router.push("/login")} className="mt-4">
             Back to login
           </Button>

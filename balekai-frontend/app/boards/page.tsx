@@ -11,6 +11,8 @@ interface Board {
   id: number
   name: string
   ownerId: string
+  ownerName: string
+  ownerEmail?: string
   isPrivate: boolean
 }
 
@@ -79,7 +81,7 @@ const handleCreateBoard = async () => {
     // Get user info from localStorage
     const userData = JSON.parse(localStorage.getItem("user") || "{}")
 
-    const response = await api.post("/boards", {
+    await api.post("/boards", {
       name: newBoardName,
       ownerId: userData.id,     // fallback to currentUserId just in case
       ownerName: userData.name,        // send the owner's display name

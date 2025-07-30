@@ -49,8 +49,9 @@ export function RegisterForm() {
 
       toast({ title: "Success", description: "Registered successfully." })
       router.push("/boards")
-    } catch (error: any) {
-      toast({ title: "Registration failed", description: error.message, variant: "destructive" })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Registration failed"
+      toast({ title: "Registration failed", description: errorMessage, variant: "destructive" })
     } finally {
       setIsLoading(false)
     }
@@ -71,8 +72,9 @@ export function RegisterForm() {
 
       toast({ title: "Success", description: "Signed in with Google." })
       router.push("/boards")
-    } catch (err: any) {
-      toast({ title: "Google sign-in failed", description: err.message, variant: "destructive" })
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Google sign-in failed"
+      toast({ title: "Google sign-in failed", description: errorMessage, variant: "destructive" })
     }
   }
 

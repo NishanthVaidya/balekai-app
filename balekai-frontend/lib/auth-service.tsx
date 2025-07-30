@@ -61,7 +61,7 @@ export const authService = {
   },
 
   // Reset password with token
-  async resetPassword(token: string, newPassword: string): Promise<void> {
+  async resetPassword(token: string): Promise<void> {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
 

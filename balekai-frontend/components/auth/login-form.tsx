@@ -47,8 +47,9 @@ export function LoginForm() {
 
       toast({ title: "Success", description: "Logged in successfully." })
       router.push("/boards")
-    } catch (error: any) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Login failed"
+      toast({ title: "Login failed", description: errorMessage, variant: "destructive" })
     } finally {
       setIsLoading(false)
     }
@@ -69,8 +70,9 @@ export function LoginForm() {
 
       toast({ title: "Success", description: "Logged in with Google." })
       router.push("/boards")
-    } catch (err: any) {
-      toast({ title: "Google login failed", description: err.message, variant: "destructive" })
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Google login failed"
+      toast({ title: "Google login failed", description: errorMessage, variant: "destructive" })
     }
   }
 

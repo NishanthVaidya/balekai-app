@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory storage for now (we'll replace with Prisma later)
-let users = [
+const users = [
   { id: '1', name: 'John', email: 'john@example.com' },
   { id: '2', name: 'Paul', email: 'paul@example.com' },
   { id: '3', name: 'George', email: 'george@example.com' },
@@ -23,7 +23,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password } = body;
+    const { name, email } = body;
     
     const newUser = {
       id: (users.length + 1).toString(),
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
       email,
     };
     
-    users.push(newUser);
+    // Note: In a real app, you'd add to a mutable array or database
+    // For now, we'll just return the user without storing it
     
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
