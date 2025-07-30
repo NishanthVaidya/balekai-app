@@ -2,6 +2,7 @@ package trelllo.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import trelllo.model.Card;
 import trelllo.model.TrelloList;
@@ -64,11 +65,34 @@ public class CardController {
 
     // 🆕 Delete Card by ID
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<String> deleteCard(@PathVariable Long id) {
-        Card card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card not found with id: " + id));
-        cardRepository.delete(card);
-        return ResponseEntity.ok("Card deleted successfully!");
+        try {
+            // First check if card exists
+            if (!cardRepository.existsById(id)) {
+                return ResponseEntity.status(404).body("Card not found with id: " + id);
+            }
+            
+            // Delete related records first using native queries
+            // Delete card_state_history records
+            cardRepository.deleteCardStateHistory(id);
+            
+            // Delete card_comments records
+            cardRepository.deleteCardComments(id);
+            
+            // Now delete the card
+            cardRepository.deleteCardById(id);
+            
+            // Verify deletion
+            boolean cardExists = cardRepository.existsById(id);
+            if (cardExists) {
+                return ResponseEntity.status(500).body("Card deletion failed - card still exists in database");
+            }
+            
+            return ResponseEntity.ok("Card deleted successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting card: " + e.getMessage());
+        }
     }
 
     // ✅ Transition Card State
