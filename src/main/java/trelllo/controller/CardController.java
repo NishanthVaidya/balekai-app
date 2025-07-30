@@ -116,14 +116,14 @@ public class CardController {
     @PutMapping("/{cardId}/assign")
     public ResponseEntity<String> assignCardToUser(
             @PathVariable Long cardId,
-            @RequestParam Long userId
+            @RequestParam String userId
     ) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
 
         User previousUser = card.getAssignedUser();
 
-        User newUser = userRepository.findById(String.valueOf(userId))
+        User newUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
         card.setAssignedUser(newUser);
