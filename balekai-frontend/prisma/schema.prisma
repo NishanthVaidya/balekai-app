@@ -54,9 +54,9 @@ model Card {
   id              String    @id @default(cuid())
   title           String
   description     String?
+  currentState    String    @default("TODO")
   label           String?
   dueDate         DateTime?
-  currentState    String    @default("TODO")
   createdAt       DateTime  @default(now())
   listId          String
   assignedUserId  String?

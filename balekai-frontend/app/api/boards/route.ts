@@ -1,30 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+// Simple in-memory storage for now
+let boards = [
+  {
+    id: '1',
+    name: 'Project Planning',
+    isPrivate: false,
+    visibility: 'PUBLIC',
+    ownerId: '1',
+    ownerName: 'John',
+    lists: []
+  }
+];
 
 export async function GET() {
   try {
-    const boards = await prisma.board.findMany({
-      include: {
-        lists: {
-          include: {
-            cards: {
-              include: {
-                assignedUser: {
-                  select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-    
     return NextResponse.json(boards);
   } catch (error) {
     console.error('Error fetching boards:', error);
@@ -40,17 +30,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, isPrivate, visibility, ownerId, ownerName } = body;
     
-    const board = await prisma.board.create({
-      data: {
-        name,
-        isPrivate: isPrivate || false,
-        visibility: visibility || 'PUBLIC',
-        ownerId,
-        ownerName,
-      },
-    });
+    const newBoard = {
+      id: (boards.length + 1).toString(),
+      name,
+      isPrivate: isPrivate || false,
+      visibility: visibility || 'PUBLIC',
+      ownerId,
+      ownerName,
+      lists: []
+    };
     
-    return NextResponse.json(board, { status: 201 });
+    boards.push(newBoard);
+    
+    return NextResponse.json(newBoard, { status: 201 });
   } catch (error) {
     console.error('Error creating board:', error);
     return NextResponse.json(

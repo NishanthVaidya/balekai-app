@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+// Simple in-memory storage for now (we'll replace with Prisma later)
+let users = [
+  { id: '1', name: 'John', email: 'john@example.com' },
+  { id: '2', name: 'Paul', email: 'paul@example.com' },
+  { id: '3', name: 'George', email: 'george@example.com' },
+  { id: '4', name: 'Ringo', email: 'ringo@example.com' },
+];
 
 export async function GET() {
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
-    });
-    
     return NextResponse.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -28,15 +25,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, password } = body;
     
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password, // Note: In production, hash the password
-      },
-    });
+    const newUser = {
+      id: (users.length + 1).toString(),
+      name,
+      email,
+    };
     
-    return NextResponse.json(user, { status: 201 });
+    users.push(newUser);
+    
+    return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     console.error('Error creating user:', error);
     return NextResponse.json(
