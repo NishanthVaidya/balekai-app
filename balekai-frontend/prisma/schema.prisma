@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  
+  // Relations
+  boards   Board[]
+  cards    Card[]
+  
+  @@map("user")
+}
+
+model Board {
+  id          String @id @default(cuid())
+  name        String
+  isPrivate   Boolean @default(false)
+  visibility  String @default("PUBLIC")
+  ownerId     String
+  ownerName   String
+  
+  // Relations
+  owner       User         @relation(fields: [ownerId], references: [id])
+  lists       TrelloList[]
+  
+  @@map("board")
+}
+
+model TrelloList {
+  id      String @id @default(cuid())
+  name    String
+  boardId String
+  
+  // Relations
+  board   Board  @relation(fields: [boardId], references: [id])
+  cards   Card[]
+  
+  @@map("trello_list")
+}
+
+model Card {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  label           String?
+  dueDate         DateTime?
+  currentState    String    @default("TODO")
+  createdAt       DateTime  @default(now())
+  listId          String
+  assignedUserId  String?
+  
+  // Relations
+  list            TrelloList @relation(fields: [listId], references: [id])
+  assignedUser    User?      @relation(fields: [assignedUserId], references: [id])
+  
+  @@map("card")
+} 
