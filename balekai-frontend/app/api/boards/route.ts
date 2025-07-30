@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory storage for now
-let boards = [
-  {
-    id: '1',
-    name: 'Project Planning',
-    isPrivate: false,
-    visibility: 'PUBLIC',
-    ownerId: '1',
-    ownerName: 'John',
-    lists: []
-  }
-];
+const boardsData = {
+  boards: [
+    {
+      id: '1',
+      name: 'Project Planning',
+      isPrivate: false,
+      visibility: 'PUBLIC',
+      ownerId: '1',
+      ownerName: 'John',
+      lists: []
+    }
+  ]
+};
 
 export async function GET() {
   try {
-    return NextResponse.json(boards);
+    return NextResponse.json(boardsData.boards);
   } catch (error) {
     console.error('Error fetching boards:', error);
     return NextResponse.json(
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
     const { name, isPrivate, visibility, ownerId, ownerName } = body;
     
     const newBoard = {
-      id: (boards.length + 1).toString(),
+      id: (boardsData.boards.length + 1).toString(),
       name,
       isPrivate: isPrivate || false,
       visibility: visibility || 'PUBLIC',
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
     };
     
     // Add the new board to the array
-    boards.push(newBoard);
+    boardsData.boards.push(newBoard);
     
     return NextResponse.json(newBoard, { status: 201 });
   } catch (error) {
