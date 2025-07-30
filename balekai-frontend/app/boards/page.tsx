@@ -107,8 +107,6 @@ const handleCreateBoard = async () => {
     // Reset form
     setNewBoardName("")
     setIsPrivate(false)
-    
-    alert("Board created successfully!")
   } catch (err) {
     console.error("Failed to create board:", err)
     alert("Failed to create board. Please try again.")
