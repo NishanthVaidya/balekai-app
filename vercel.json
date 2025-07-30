@@ -5,11 +5,5 @@
       "src": "balekai-frontend/package.json",
       "use": "@vercel/next"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/balekai-frontend/$1"
-    }
   ]
 } 
