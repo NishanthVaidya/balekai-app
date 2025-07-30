@@ -80,26 +80,38 @@ const handleCreateBoard = async () => {
   try {
     // Get user info from localStorage
     const userData = JSON.parse(localStorage.getItem("user") || "{}")
+    
+    if (!userData.id || !userData.name) {
+      alert("User data not found. Please log in again.")
+      return
+    }
 
-    await api.post("/boards", {
+    const response = await api.post("/boards", {
       name: newBoardName,
-      ownerId: userData.id,     // fallback to currentUserId just in case
-      ownerName: userData.name,        // send the owner's display name
-      isPrivate,                                 // now correctly interpreted as a boolean
+      ownerId: userData.id,
+      ownerName: userData.name,
+      isPrivate,
     })
 
-    // Refresh the board list
-    const res = await api.get("/boards")
-    const filteredBoards = res.data.filter(
-      (b: Board) => !b.isPrivate || b.ownerId === (userData.id || currentUserId)
-    )
-    setBoards(filteredBoards)
+    // Add the new board to the current list
+    const newBoard = {
+      id: parseInt(response.data.id),
+      name: response.data.name,
+      ownerId: response.data.ownerId,
+      ownerName: response.data.ownerName,
+      isPrivate: response.data.isPrivate,
+    }
+    
+    setBoards(prev => [...prev, newBoard])
 
     // Reset form
     setNewBoardName("")
     setIsPrivate(false)
+    
+    alert("Board created successfully!")
   } catch (err) {
     console.error("Failed to create board:", err)
+    alert("Failed to create board. Please try again.")
   }
 }
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory storage for now
-const boards = [
+let boards = [
   {
     id: '1',
     name: 'Project Planning',
@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
       lists: []
     };
     
-    // Note: In a real app, you'd add to a mutable array or database
-    // For now, we'll just return the board without storing it
+    // Add the new board to the array
+    boards.push(newBoard);
     
     return NextResponse.json(newBoard, { status: 201 });
   } catch (error) {
