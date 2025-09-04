@@ -3152,3 +3152,76 @@ Hibernate: alter table if exists card alter column created_at set data type time
 2025-09-03T20:12:58.110-04:00  INFO 12705 --- [  restartedMain] b.designpatterns.TrellloApplication      : Started TrellloApplication in 0.497 seconds (process running for 1168.376)
 Hibernate: select count(*) from "user" u1_0
 2025-09-03T20:12:58.113-04:00  INFO 12705 --- [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2025-09-03T20:42:38.896-04:00  INFO 12705 --- [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 1 deletion, 0 modifications)
+2025-09-03T20:42:38.932-04:00  INFO 12705 --- [      Thread-39] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-09-03T20:42:38.953-04:00  WARN 12705 --- [      Thread-39] o.a.c.loader.WebappClassLoaderBase       : The web application [ROOT] appears to have started a thread named [HikariPool-10 housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base@17.0.15/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base@17.0.15/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:252)
+ java.base@17.0.15/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1679)
+ java.base@17.0.15/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1182)
+ java.base@17.0.15/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:899)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1062)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1122)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+ java.base@17.0.15/java.lang.Thread.run(Thread.java:840)
+2025-09-03T20:42:38.954-04:00  WARN 12705 --- [      Thread-39] o.a.c.loader.WebappClassLoaderBase       : The web application [ROOT] appears to have started a thread named [HikariPool-10 connection closer] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base@17.0.15/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base@17.0.15/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:252)
+ java.base@17.0.15/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1679)
+ java.base@17.0.15/java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:460)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1061)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1122)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+ java.base@17.0.15/java.lang.Thread.run(Thread.java:840)
+2025-09-03T20:42:38.955-04:00  WARN 12705 --- [      Thread-39] o.a.c.loader.WebappClassLoaderBase       : The web application [ROOT] appears to have started a thread named [HikariPool-10 connection adder] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base@17.0.15/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base@17.0.15/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:252)
+ java.base@17.0.15/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1679)
+ java.base@17.0.15/java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:460)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1061)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1122)
+ java.base@17.0.15/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+ java.base@17.0.15/java.lang.Thread.run(Thread.java:840)
+2025-09-03T20:42:38.965-04:00  INFO 12705 --- [      Thread-39] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-03T20:42:38.975-04:00  INFO 12705 --- [      Thread-39] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Shutdown initiated...
+2025-09-03T20:42:38.976-04:00  INFO 12705 --- [      Thread-39] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Shutdown completed.
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.2)
+
+2025-09-03T20:42:39.152-04:00  INFO 12705 --- [  restartedMain] b.designpatterns.TrellloApplication      : Starting TrellloApplication using Java 17.0.15 with PID 12705 (/Users/nishanthvaidya/Desktop/OOD/Balekai/target/classes started by nishanthvaidya in /Users/nishanthvaidya/Desktop/OOD/Balekai)
+2025-09-03T20:42:39.152-04:00  INFO 12705 --- [  restartedMain] b.designpatterns.TrellloApplication      : No active profile set, falling back to 1 default profile: "default"
+2025-09-03T20:42:39.317-04:00  INFO 12705 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-03T20:42:39.332-04:00  INFO 12705 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 4 JPA repository interfaces.
+2025-09-03T20:42:39.485-04:00  INFO 12705 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-09-03T20:42:39.485-04:00  INFO 12705 --- [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-03T20:42:39.485-04:00  INFO 12705 --- [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.11]
+2025-09-03T20:42:39.498-04:00  INFO 12705 --- [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-03T20:42:39.498-04:00  INFO 12705 --- [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 344 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2025-09-03T20:42:39.535-04:00  INFO 12705 --- [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-03T20:42:39.538-04:00  INFO 12705 --- [  restartedMain] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2025-09-03T20:42:39.538-04:00  INFO 12705 --- [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-03T20:42:39.538-04:00  INFO 12705 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-11 - Starting...
+2025-09-03T20:42:39.546-04:00  INFO 12705 --- [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-11 - Added connection org.postgresql.jdbc.PgConnection@613f5968
+2025-09-03T20:42:39.546-04:00  INFO 12705 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-11 - Start completed.
+2025-09-03T20:42:39.575-04:00  INFO 12705 --- [  restartedMain] o.h.b.i.BytecodeProviderInitiator        : HHH000021: Bytecode provider name : bytebuddy
+2025-09-03T20:42:39.617-04:00  INFO 12705 --- [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+Hibernate: alter table if exists card alter column created_at set data type timestamp(6)
+2025-09-03T20:42:39.688-04:00  INFO 12705 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-03T20:42:39.722-04:00  INFO 12705 --- [  restartedMain] b.designpatterns.config.FirebaseConfig   : 🔥 Initializing Firebase configuration...
+2025-09-03T20:42:39.724-04:00  INFO 12705 --- [  restartedMain] b.designpatterns.config.FirebaseConfig   : 📁 Firebase config file found: false
+2025-09-03T20:42:39.724-04:00  INFO 12705 --- [  restartedMain] b.designpatterns.config.FirebaseConfig   : 📁 Firebase config file path: firebase-service-account.json
+2025-09-03T20:42:39.724-04:00 ERROR 12705 --- [  restartedMain] b.designpatterns.config.FirebaseConfig   : ❌ Firebase service account file not found!
+2025-09-03T20:42:39.765-04:00  WARN 12705 --- [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-03T20:42:39.810-04:00  INFO 12705 --- [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-09-03T20:42:39.814-04:00  INFO 12705 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2025-09-03T20:42:39.818-04:00  INFO 12705 --- [  restartedMain] b.designpatterns.TrellloApplication      : Started TrellloApplication in 0.684 seconds (process running for 2950.063)
+Hibernate: select count(*) from "user" u1_0
+2025-09-03T20:42:39.821-04:00  INFO 12705 --- [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
