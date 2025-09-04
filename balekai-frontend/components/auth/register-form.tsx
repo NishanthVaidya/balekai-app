@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
+import { signInWithGoogle } from "@/lib/firebase"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name is required." }),
@@ -67,11 +68,32 @@ export function RegisterForm() {
   }
 
   const handleGoogleSignup = async () => {
-    toast({ 
-      title: "Google sign-up not available", 
-      description: "Please use email/password registration for now.", 
-      variant: "destructive" 
-    })
+    setIsLoading(true)
+    try {
+      const result = await signInWithGoogle()
+      const user = result.user
+      const idToken = await user.getIdToken()
+
+      localStorage.setItem("token", idToken)
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: user.uid,
+          name: user.displayName || "User",
+          email: user.email || "",
+        })
+      )
+
+      toast({ title: "Success", description: "Signed up with Google." })
+      router.push("/boards")
+    } catch (error: unknown) {
+      const description =
+        (error as { message?: string })?.message ||
+        "Google sign-up failed. Please try again."
+      toast({ title: "Sign-up failed", description, variant: "destructive" })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
