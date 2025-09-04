@@ -219,7 +219,7 @@ const handleCreateBoard = async () => {
                   placeholder="Board name"
                   value={newBoardName}
                   onChange={(e) => setNewBoardName(e.target.value)}
-                  className="flex-1 p-2 border border-gray-300 rounded-md text-sm text-gray-800 placeholder-gray-500 focus:ring-trello-500 focus:border-trello-500"
+                  className="flex-1 p-2 border border-gray-300 rounded-md text-sm text-gray-800 placeholder-gray-500 focus:ring-balekai-500 focus:border-balekai-500"
                 />
                 <div className="flex items-center">
                   <label className="inline-flex items-center mr-4">
@@ -227,7 +227,7 @@ const handleCreateBoard = async () => {
                       type="checkbox"
                       checked={isPrivate}
                       onChange={(e) => setIsPrivate(e.target.checked)}
-                      className="rounded border-gray-300 text-trello-600 shadow-sm focus:border-trello-300 focus:ring focus:ring-trello-200 focus:ring-opacity-50 mr-2"
+                      className="rounded border-gray-300 text-balekai-600 shadow-sm focus:border-balekai-300 focus:ring focus:ring-balekai-200 focus:ring-opacity-50 mr-2"
                     />
                     <span className="text-sm text-gray-700">Private</span>
                   </label>
@@ -286,7 +286,7 @@ const handleCreateBoard = async () => {
                         <div className="flex items-center flex-1">
                           <Link
                             href={`/boards/${board.id}`}
-                            className="text-xl font-medium text-gray-900 hover:text-trello-600 transition-colors"
+                            className="text-xl font-medium text-gray-900 hover:text-balekai-600 transition-colors"
                           >
                             {board.name}
                           </Link>
@@ -313,7 +313,7 @@ const handleCreateBoard = async () => {
                       <div className="mt-4">
                         <Link
                           href={`/boards/${board.id}`}
-                          className="text-trello-600 hover:text-trello-800 text-sm font-medium"
+                          className="text-balekai-600 hover:text-balekai-800 text-sm font-medium"
                         >
                           Open Board →
                         </Link>

@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.kardo</groupId>
-    <artifactId>kardo</artifactId>
+    <groupId>com.balekai</groupId>
+    <artifactId>balekai</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>kardo</name>
-    <description>Spring Boot</description>
+    <name>balekai</name>
+    <description>Balekai - Trello-like Kanban Board Application</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -138,7 +138,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>kardo.designpatterns.TrellloApplication</mainClass>
+                    <mainClass>balekai.designpatterns.TrellloApplication</mainClass>
                 </configuration>
             </plugin>
 

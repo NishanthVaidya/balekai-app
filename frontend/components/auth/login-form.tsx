@@ -6,13 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Link from "next/link"
+import api from "@/app/utils/api"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { signInWithGoogle, auth } from "@/lib/firebase"
-import { signInWithEmailAndPassword } from "firebase/auth"
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -35,49 +34,48 @@ export function LoginForm() {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true)
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password)
-      const token = await userCredential.user.getIdToken()
+      // Call backend login endpoint
+      const response = await api.post("/auth/login", {
+        email: data.email,
+        password: data.password,
+        name: data.email.split("@")[0], // Use email prefix as name for login
+      })
 
+      const token = response.data
+      
+      // Store the JWT token from backend
       localStorage.setItem("token", token)
       localStorage.setItem("user", JSON.stringify({
-        id: userCredential.user.uid,
-        name: userCredential.user.displayName ?? data.email.split("@")[0],
         email: data.email,
+        name: data.email.split("@")[0],
       }))
 
       toast({ title: "Success", description: "Logged in successfully." })
       router.push("/boards")
-    } catch (error: unknown) {
-      toast({ title: "Login failed", description: typeof error === 'object' && error && 'message' in error ? (error as { message: string }).message : String(error), variant: "destructive" })
+    } catch (error: any) {
+      const errorMessage = error.response?.data || "Login failed. Please try again."
+      toast({ 
+        title: "Login failed", 
+        description: errorMessage, 
+        variant: "destructive" 
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithGoogle()
-      const user = result.user
-      const token = await user.getIdToken()
-
-      localStorage.setItem("token", token)
-      localStorage.setItem("user", JSON.stringify({
-        id: user.uid,
-        name: user.displayName,
-        email: user.email,
-      }))
-
-      toast({ title: "Success", description: "Logged in with Google." })
-      router.push("/boards")
-    } catch (err: unknown) {
-      toast({ title: "Google login failed", description: typeof err === 'object' && err && 'message' in err ? (err as { message: string }).message : String(err), variant: "destructive" })
-    }
+    toast({ 
+      title: "Google login not available", 
+      description: "Please use email/password login for now.", 
+      variant: "destructive" 
+    })
   }
 
   return (
-    <div className="trello-card">
+    <div className="balekai-card">
       <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold text-trello-700">Log in to Trello</h2>
+        <h2 className="text-2xl font-bold text-balekai-700">Log in to balekai</h2>
         <p className="text-gray-500 text-sm mt-1">Enter your details to sign in to your account</p>
       </div>
 
@@ -91,7 +89,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel className="text-gray-700">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="you@example.com" {...field} className="trello-input" />
+                  <Input placeholder="you@example.com" {...field} className="balekai-input" />
                 </FormControl>
                 <FormMessage className="text-red-500" />
               </FormItem>
@@ -104,37 +102,49 @@ export function LoginForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <div className="flex justify-between items-center">
-                  <FormLabel className="text-gray-700">Password</FormLabel>
-                  <Link href="/forgot-password" className="text-xs trello-link">
-                    Forgot password?
-                  </Link>
-                </div>
+                <FormLabel className="text-gray-700">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="********" {...field} className="trello-input" />
+                  <Input 
+                    type="password" 
+                    placeholder="Enter your password" 
+                    {...field} 
+                    className="balekai-input" 
+                  />
                 </FormControl>
                 <FormMessage className="text-red-500" />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full h-10 mt-2 trello-button" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Log in"}
+          <Button 
+            type="submit" 
+            className="w-full balekai-button" 
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
       </Form>
 
-      <div className="mt-4">
-        <Button
+      <div className="mt-6">
+        <Button 
+          type="button" 
+          variant="outline" 
+          className="w-full" 
           onClick={handleGoogleLogin}
-          variant="outline"
-          className="w-full text-gray-800 bg-white border border-gray-300 hover:bg-gray-100"
         >
-          Sign in with Google
+          Continue with Google
         </Button>
       </div>
 
-
+      <div className="mt-4 text-center">
+        <p className="text-sm text-gray-600">
+          Don't have an account?{" "}
+          <Link href="/register" className="text-balekai-600 hover:text-balekai-700 font-medium">
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }

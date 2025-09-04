@@ -9,9 +9,9 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCfVbVp0n1pqoo6RN4T_r5KfIslVwyZciw",
-  authDomain: "kardo-7a26a.firebaseapp.com",
-  projectId: "kardo-7a26a",
-  storageBucket: "kardo-7a26a.firebasestorage.app",
+  authDomain: "balekai-7a26a.firebaseapp.com",
+  projectId: "balekai-7a26a",
+  storageBucket: "balekai-7a26a.firebasestorage.app",
   messagingSenderId: "143118515728",
   appId: "1:143118515728:web:8221e4d6ebfd66e2a35495",
   measurementId: "G-0VNZXYRPC4"

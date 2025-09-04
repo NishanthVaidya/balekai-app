@@ -14,13 +14,13 @@ interface NavbarProps {
   title?: string // Add title prop
 }
 
-// Update the Navbar function to place the sidebar toggle before the Trello title
+// Update the Navbar function to place the sidebar toggle before the balekai title
 // and remove the Boards and Your Boards links
 export function Navbar({
   username = "User",
   sidebarOpen = false,
   onSidebarToggle = () => {},
-  title = "Kardo", // Default to Kardo
+  title = "balekai", // Default to balekai
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
@@ -38,7 +38,7 @@ export function Navbar({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            {/* Sidebar toggle button moved before the Trello title */}
+            {/* Sidebar toggle button moved before the balekai title */}
             <button
               onClick={onSidebarToggle}
               className="mr-3 p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none"

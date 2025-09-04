@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import Link from "next/link"
 import * as z from "zod"
-
+import api from "@/app/utils/api"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { auth, signInWithGoogle } from "@/lib/firebase"
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name is required." }),
@@ -36,44 +34,42 @@ export function RegisterForm() {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true)
     try {
-      const userCred = await createUserWithEmailAndPassword(auth, data.email, data.password)
-      await updateProfile(userCred.user, { displayName: data.name })
-      const token = await userCred.user.getIdToken()
+      // Call backend register endpoint
+      const response = await api.post("/auth/register", {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      })
 
+      const token = response.data
+      
+      // Store the JWT token from backend
       localStorage.setItem("token", token)
       localStorage.setItem("user", JSON.stringify({
-        id: userCred.user.uid,
         name: data.name,
         email: data.email,
       }))
 
       toast({ title: "Success", description: "Registered successfully." })
       router.push("/boards")
-    } catch (error: unknown) {
-      toast({ title: "Registration failed", description: typeof error === 'object' && error && 'message' in error ? (error as { message: string }).message : String(error), variant: "destructive" })
+    } catch (error: any) {
+      const errorMessage = error.response?.data || "Registration failed. Please try again."
+      toast({ 
+        title: "Registration failed", 
+        description: errorMessage, 
+        variant: "destructive" 
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleGoogleSignup = async () => {
-    try {
-      const result = await signInWithGoogle()
-      const user = result.user
-      const token = await user.getIdToken()
-
-      localStorage.setItem("token", token)
-      localStorage.setItem("user", JSON.stringify({
-        id: user.uid,
-        name: user.displayName,
-        email: user.email,
-      }))
-
-      toast({ title: "Success", description: "Signed in with Google." })
-      router.push("/boards")
-    } catch (err: unknown) {
-      toast({ title: "Google sign-in failed", description: typeof err === 'object' && err && 'message' in err ? (err as { message: string }).message : String(err), variant: "destructive" })
-    }
+    toast({ 
+      title: "Google sign-up not available", 
+      description: "Please use email/password registration for now.", 
+      variant: "destructive" 
+    })
   }
 
   return (
@@ -100,7 +96,7 @@ export function RegisterForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
-                <FormControl><Input placeholder="you@example.com" {...field} /></FormControl>
+                <FormControl><Input placeholder="john@example.com" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -120,31 +116,37 @@ export function RegisterForm() {
           />
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing up..." : "Sign up"}
+            {isLoading ? "Creating account..." : "Create account"}
           </Button>
-          <div className="text-center">
-            <Link href="/login" className="text-sm hover:text-brand underline underline-offset-4">
-              Back to Login
-            </Link>
-          </div>
-
         </form>
       </Form>
 
-      <div className="flex items-center justify-center">
-        <div className="w-full border-t border-gray-300" />
-        <span className="px-4 text-gray-500 text-sm">or</span>
-        <div className="w-full border-t border-gray-300" />
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
+        </div>
       </div>
 
-
       <Button
-        onClick={handleGoogleSignup}
         variant="outline"
-        className="w-full text-gray-800 bg-white border border-gray-300 hover:bg-gray-100"
+        type="button"
+        className="w-full"
+        onClick={handleGoogleSignup}
       >
-        Continue with Google
+        Google
       </Button>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link href="/login" className="underline underline-offset-4 hover:text-primary">
+          Sign in
+        </Link>
+      </p>
     </div>
   )
 }
