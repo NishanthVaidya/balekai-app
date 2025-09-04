@@ -1,4 +1,4 @@
-// File: /Users/nishanthvaidya/Desktop/OOD/Kardo/frontend/app/forgot-password/page.tsx
+// File: /Users/nishanthvaidya/Desktop/OOD/Balekai/frontend/app/forgot-password/page.tsx
 import * as entry from '../../../../app/forgot-password/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

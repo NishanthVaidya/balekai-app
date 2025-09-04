@@ -52,8 +52,8 @@ export function LoginForm() {
 
       toast({ title: "Success", description: "Logged in successfully." })
       router.push("/boards")
-    } catch (error: any) {
-      const errorMessage = error.response?.data || "Login failed. Please try again."
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: string } })?.response?.data || "Login failed. Please try again."
       toast({ 
         title: "Login failed", 
         description: errorMessage, 
@@ -139,7 +139,7 @@ export function LoginForm() {
 
       <div className="mt-4 text-center">
         <p className="text-sm text-gray-600">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="text-balekai-600 hover:text-balekai-700 font-medium">
             Sign up
           </Link>

@@ -8,6 +8,7 @@ import Link from "next/link"
 import * as z from "zod"
 import api from "@/app/utils/api"
 
+
 import { Button } from "@/components/ui/button"
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
@@ -52,8 +53,9 @@ export function RegisterForm() {
 
       toast({ title: "Success", description: "Registered successfully." })
       router.push("/boards")
-    } catch (error: any) {
-      const errorMessage = error.response?.data || "Registration failed. Please try again."
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 
+        (error as { response?: { data?: string } })?.response?.data || "Registration failed. Please try again."
       toast({ 
         title: "Registration failed", 
         description: errorMessage, 
@@ -96,7 +98,7 @@ export function RegisterForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
-                <FormControl><Input placeholder="john@example.com" {...field} /></FormControl>
+                <FormControl><Input placeholder="you@example.com" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -116,37 +118,31 @@ export function RegisterForm() {
           />
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create account"}
+            {isLoading ? "Signing up..." : "Sign up"}
           </Button>
+          <div className="text-center">
+            <Link href="/login" className="text-sm hover:text-brand underline underline-offset-4">
+              Back to Login
+            </Link>
+          </div>
+
         </form>
       </Form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
+      <div className="flex items-center justify-center">
+        <div className="w-full border-t border-gray-300" />
+        <span className="px-4 text-gray-500 text-sm">or</span>
+        <div className="w-full border-t border-gray-300" />
       </div>
 
-      <Button
-        variant="outline"
-        type="button"
-        className="w-full"
-        onClick={handleGoogleSignup}
-      >
-        Google
-      </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
-        <Link href="/login" className="underline underline-offset-4 hover:text-primary">
-          Sign in
-        </Link>
-      </p>
+      <Button
+        onClick={handleGoogleSignup}
+        variant="outline"
+        className="w-full text-gray-800 bg-white border border-gray-300 hover:bg-gray-100"
+      >
+        Continue with Google
+      </Button>
     </div>
   )
 }
