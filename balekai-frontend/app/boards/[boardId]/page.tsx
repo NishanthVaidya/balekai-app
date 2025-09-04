@@ -31,7 +31,7 @@ interface Board {
 }
 
 interface UserType {
-  id: number
+  id: string
   name: string
 }
 
@@ -99,11 +99,16 @@ export default function BoardPage() {
     fetchUsers()
   }, [])
 
-  const handleAssignUser = async (userId: number) => {
+  const handleAssignUser = async (userId: string | number) => {
     if (!selectedCard) return
+    
+    // Convert to string to ensure compatibility with backend
+    const stringUserId = String(userId)
+    
     try {
-      await api.put(`/cards/${selectedCard.id}/assign?userId=${userId}`)
-      setSelectedCard({ ...selectedCard, assignedUser: allUsers.find((u) => u.id === userId) })
+      await api.put(`/cards/${selectedCard.id}/assign?userId=${stringUserId}`)
+      const assignedUser = allUsers.find((u) => u.id === stringUserId)
+      setSelectedCard({ ...selectedCard, assignedUser })
 
       // Update the board state to reflect the change
       if (board) {
@@ -111,7 +116,7 @@ export default function BoardPage() {
         updatedBoard.lists = updatedBoard.lists.map((list) => ({
           ...list,
           cards: list.cards.map((card) =>
-            card.id === selectedCard.id ? { ...card, assignedUser: allUsers.find((u) => u.id === userId) } : card,
+            card.id === selectedCard.id ? { ...card, assignedUser } : card,
           ),
         }))
         setBoard(updatedBoard)
@@ -120,11 +125,13 @@ export default function BoardPage() {
       console.error("Failed to assign user:", err)
       // Optimistically update UI even if API call fails
       if (board && selectedCard) {
+        const stringUserId = String(userId)
+        const assignedUser = allUsers.find((u) => u.id === stringUserId)
         const updatedBoard = { ...board }
         updatedBoard.lists = updatedBoard.lists.map((list) => ({
           ...list,
           cards: list.cards.map((card) =>
-            card.id === selectedCard.id ? { ...card, assignedUser: allUsers.find((u) => u.id === userId) } : card,
+            card.id === selectedCard.id ? { ...card, assignedUser } : card,
           ),
         }))
         setBoard(updatedBoard)
@@ -723,7 +730,7 @@ export default function BoardPage() {
                   <select
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-gray-800"
                     value={selectedCard.assignedUser?.id || ""}
-                    onChange={(e) => handleAssignUser(Number(e.target.value))}
+                    onChange={(e) => handleAssignUser(e.target.value)}
                   >
                     <option value="">-- Unassigned --</option>
                     {allUsers.map((user) => (
