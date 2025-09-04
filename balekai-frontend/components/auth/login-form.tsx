@@ -65,11 +65,34 @@ export function LoginForm() {
   }
 
   const handleGoogleLogin = async () => {
-    toast({ 
-      title: "Google login not available", 
-      description: "Please use email/password login for now.", 
-      variant: "destructive" 
-    })
+    setIsLoading(true)
+    try {
+      const result = await signInWithGoogle()
+      const user = result.user
+      const idToken = await user.getIdToken()
+
+      // Store the Firebase ID token
+      localStorage.setItem("token", idToken)
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: user.uid,
+          name: user.displayName || "User",
+          email: user.email || "",
+        })
+      )
+
+      // For Google users, skip backend login - they'll be auto-created by FirebaseTokenFilter
+      toast({ title: "Success", description: "Logged in with Google." })
+      router.push("/boards")
+    } catch (error: unknown) {
+      const description =
+        (error as { message?: string })?.message ||
+        "Google login failed. Please try again."
+      toast({ title: "Login failed", description, variant: "destructive" })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

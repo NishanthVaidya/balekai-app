@@ -74,6 +74,7 @@ export function RegisterForm() {
       const user = result.user
       const idToken = await user.getIdToken()
 
+      // Store the Firebase ID token
       localStorage.setItem("token", idToken)
       localStorage.setItem(
         "user",
@@ -84,6 +85,7 @@ export function RegisterForm() {
         })
       )
 
+      // For Google users, skip backend registration - they'll be auto-created by FirebaseTokenFilter
       toast({ title: "Success", description: "Signed up with Google." })
       router.push("/boards")
     } catch (error: unknown) {
