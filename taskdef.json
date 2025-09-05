@@ -11,7 +11,7 @@
     "image": "422456985301.dkr.ecr.us-east-1.amazonaws.com/balekai-backend:latest",
     "portMappings": [{ "containerPort": 8080, "hostPort": 8080, "protocol": "tcp" }],
     "environment": [
-      { "name":"DATABASE_URL", "value":"jdbc:postgresql://balekai-postgres.cy7yeimaywkm.us-east-1.rds.amazonaws.com:5432/balekai_db" }
+      { "name":"DATABASE_URL", "value":"jdbc:postgresql://balekai-postgres-new.cy7yeimaywkm.us-east-1.rds.amazonaws.com:5432/balekai_db" }
     ],
     "secrets": [
       { "name":"DATABASE_USERNAME","valueFrom":"arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials:username::" },

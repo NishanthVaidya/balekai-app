@@ -7,8 +7,7 @@ WORKDIR /app
 # Copy the JAR file
 COPY target/balekai-1.0-SNAPSHOT.jar app.jar
 
-# Copy Firebase configuration from target/classes (Maven build output)
-COPY target/classes/firebase-service-account.json firebase-service-account.json
+# Firebase configuration is handled via environment variables in production
 
 # Expose port 8080
 EXPOSE 8080
