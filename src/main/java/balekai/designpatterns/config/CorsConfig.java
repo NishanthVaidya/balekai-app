@@ -13,8 +13,15 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://balekai-alb-new-626347040.us-east-1.elb.amazonaws.com/", "www.balekai.com")
+                        .allowedOrigins(
+                            "http://localhost:3000", 
+                            "http://localhost:3001",
+                            "https://www.balekai.com",
+                            "https://balekai.com",
+                            "https://kardo-zeta.vercel.app"
+                        )
                         .allowedMethods("*")
+                        .allowedHeaders("*")
                         .allowCredentials(true);
             }
         };
