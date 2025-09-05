@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "http://localhost:3001")
+                        .allowedOrigins("http://balekai-alb-new-626347040.us-east-1.elb.amazonaws.com/", "www.balekai.com")
                         .allowedMethods("*")
                         .allowCredentials(true);
             }
