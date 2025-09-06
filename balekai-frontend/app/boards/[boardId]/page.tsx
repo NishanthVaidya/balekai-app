@@ -92,9 +92,16 @@ export default function BoardPage() {
     const fetchUsers = async () => {
       try {
         const res = await api.get("/users")
-        setAllUsers(res.data)
+        // ✅ Ensure user data is properly formatted
+        const users = res.data.map((user: { id: string | number; name?: string }) => ({
+          id: String(user.id), // Ensure ID is string
+          name: user.name || "Unknown User"
+        }))
+        setAllUsers(users)
       } catch (err) {
         console.error("Failed to fetch users:", err)
+        // Set empty array on error
+        setAllUsers([])
       }
     }
     fetchUsers()
@@ -103,13 +110,35 @@ export default function BoardPage() {
   const handleAssignUser = async (userId: string | number) => {
     if (!selectedCard) return
     
+    // ✅ Add validation to prevent API calls with temporary card IDs
+    if (!isValidCardId(selectedCard.id)) {
+      console.warn("Cannot assign user to temporary card. Please save the card first.")
+      alert("Cannot assign user to unsaved card. Please save the card first.")
+      return
+    }
+    
     // Convert to string to ensure compatibility with backend
     const stringUserId = String(userId)
     
     try {
       await api.put(`/cards/${selectedCard.id}/assign?userId=${stringUserId}`)
-      const assignedUser = allUsers.find((u) => u.id === stringUserId)
-      setSelectedCard({ ...selectedCard, assignedUser })
+      const assignedUser = stringUserId ? allUsers.find((u) => u.id === stringUserId) : null
+      
+      // ✅ Update state history
+      const assignmentEntry = assignedUser 
+        ? `Assigned to ${assignedUser.name} at ${new Date().toLocaleString()}`
+        : `Unassigned at ${new Date().toLocaleString()}`
+      
+      const updatedCard = { 
+        ...selectedCard, 
+        assignedUser: assignedUser || undefined,
+        stateHistory: [...(selectedCard.stateHistory || []), assignmentEntry]
+      }
+      
+      setSelectedCard(updatedCard)
+      
+      // ✅ Update card history display
+      setCardHistory([...(selectedCard.stateHistory || []), assignmentEntry])
 
       // Update the board state to reflect the change
       if (board) {
@@ -117,26 +146,14 @@ export default function BoardPage() {
         updatedBoard.lists = updatedBoard.lists.map((list) => ({
           ...list,
           cards: list.cards.map((card) =>
-            card.id === selectedCard.id ? { ...card, assignedUser } : card,
+            card.id === selectedCard.id ? updatedCard : card,
           ),
         }))
         setBoard(updatedBoard)
       }
     } catch (err) {
       console.error("Failed to assign user:", err)
-      // Optimistically update UI even if API call fails
-      if (board && selectedCard) {
-        const stringUserId = String(userId)
-        const assignedUser = allUsers.find((u) => u.id === stringUserId)
-        const updatedBoard = { ...board }
-        updatedBoard.lists = updatedBoard.lists.map((list) => ({
-          ...list,
-          cards: list.cards.map((card) =>
-            card.id === selectedCard.id ? { ...card, assignedUser } : card,
-          ),
-        }))
-        setBoard(updatedBoard)
-      }
+      alert("Failed to assign user. Please try again.")
     }
   }
 
@@ -207,8 +224,20 @@ export default function BoardPage() {
     }
   }
 
+  // ✅ Helper function to check if a card ID is valid for API calls
+  const isValidCardId = (id: number): boolean => {
+    return id > 0 && !isNaN(id) && isFinite(id)
+  }
+
   const handleStateChange = async (newState: string) => {
     if (!selectedCard || !board) return
+
+    // ✅ Add validation to prevent API calls with temporary card IDs
+    if (!isValidCardId(selectedCard.id)) {
+      console.warn("Cannot change state for temporary card. Please save the card first.")
+      alert("Cannot change state for unsaved card. Please save the card first.")
+      return
+    }
 
     try {
       await api.put(`/cards/${selectedCard.id}/transition?newState=${newState}`)
@@ -217,40 +246,37 @@ export default function BoardPage() {
 
       await api.put(`/cards/${selectedCard.id}/move?listId=${targetList.id}`)
 
+      // ✅ Update state history
+      const stateHistoryEntry = `${selectedCard.currentState} → ${newState} at ${new Date().toLocaleString()}`
+      
       const updatedBoard = { ...board }
       updatedBoard.lists = updatedBoard.lists.map((list) => {
         if (list.cards.some((c) => c.id === selectedCard.id)) {
           return { ...list, cards: list.cards.filter((c) => c.id !== selectedCard.id) }
         }
         if (list.id === targetList.id) {
-          return { ...list, cards: [...list.cards, { ...selectedCard, currentState: newState }] }
+          const updatedCard = { 
+            ...selectedCard, 
+            currentState: newState,
+            stateHistory: [...(selectedCard.stateHistory || []), stateHistoryEntry]
+          }
+          return { ...list, cards: [...list.cards, updatedCard] }
         }
         return list
       })
 
       setBoard(updatedBoard)
-      setSelectedCard({ ...selectedCard, currentState: newState })
+      setSelectedCard({ 
+        ...selectedCard, 
+        currentState: newState,
+        stateHistory: [...(selectedCard.stateHistory || []), stateHistoryEntry]
+      })
+      
+      // ✅ Update card history display
+      setCardHistory([...(selectedCard.stateHistory || []), stateHistoryEntry])
     } catch (err) {
       console.error("Failed to change card state:", err)
-      // Optimistically update UI even if API call fails
-      if (board && selectedCard) {
-        const targetList = board.lists.find((l) => l.name.toLowerCase() === newState.toLowerCase())
-        if (!targetList) return
-
-        const updatedBoard = { ...board }
-        updatedBoard.lists = updatedBoard.lists.map((list) => {
-          if (list.cards.some((c) => c.id === selectedCard.id)) {
-            return { ...list, cards: list.cards.filter((c) => c.id !== selectedCard.id) }
-          }
-          if (list.id === targetList.id) {
-            return { ...list, cards: [...list.cards, { ...selectedCard, currentState: newState }] }
-          }
-          return list
-        })
-
-        setBoard(updatedBoard)
-        setSelectedCard({ ...selectedCard, currentState: newState })
-      }
+      alert("Failed to change card state. Please try again.")
     }
   }
 
@@ -259,9 +285,13 @@ export default function BoardPage() {
       // ✅ Use the stateHistory from the card data if available, otherwise fetch from API
       if (card.stateHistory && card.stateHistory.length > 0) {
         setCardHistory(card.stateHistory)
-      } else {
+      } else if (isValidCardId(card.id)) {
+        // Only fetch from API for valid card IDs
         const res = await api.get(`/cards/${card.id}/history`)
         setCardHistory(res.data)
+      } else {
+        // For temporary cards, show empty history with a note
+        setCardHistory(["This is a temporary card. Save it to view activity history."])
       }
       setSelectedCard(card)
     } catch (err) {
