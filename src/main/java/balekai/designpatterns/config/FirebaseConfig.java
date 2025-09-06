@@ -20,36 +20,73 @@ public class FirebaseConfig {
         log.info("🔥 Initializing Firebase configuration...");
         
         try {
-            // Load Firebase service account from classpath resources
+            // Try to load Firebase service account from classpath resources first
             ClassPathResource resource = new ClassPathResource("firebase-service-account.json");
             log.info("📁 Firebase config file found: {}", resource.exists());
             log.info("📁 Firebase config file path: {}", resource.getPath());
             
-            if (!resource.exists()) {
-                log.error("❌ Firebase service account file not found!");
-                return;
-            }
-            
-            try (InputStream serviceAccount = resource.getInputStream()) {
-                log.info("📖 Reading Firebase service account...");
+            if (resource.exists()) {
+                try (InputStream serviceAccount = resource.getInputStream()) {
+                    log.info("📖 Reading Firebase service account from file...");
+                    
+                    FirebaseOptions options = FirebaseOptions.builder()
+                            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                            .build();
+
+                    log.info("🔧 Firebase options built successfully from file");
+                    log.info("🔧 Project ID: {}", options.getProjectId());
+
+                    if (FirebaseApp.getApps().isEmpty()) {
+                        FirebaseApp app = FirebaseApp.initializeApp(options);
+                        log.info("✅ Firebase initialized successfully from file: {}", app.getName());
+                    } else {
+                        log.info("ℹ️ Firebase already initialized");
+                    }
+                    return;
+                }
+            } else {
+                log.warn("⚠️ Firebase service account file not found, trying environment variables...");
                 
-                FirebaseOptions options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                        .build();
+                // Try to initialize with environment variables
+                String projectId = System.getenv("FIREBASE_PROJECT_ID");
+                String privateKey = System.getenv("FIREBASE_PRIVATE_KEY");
+                String clientEmail = System.getenv("FIREBASE_CLIENT_EMAIL");
+                
+                if (projectId != null && privateKey != null && clientEmail != null) {
+                    log.info("📖 Reading Firebase service account from environment variables...");
+                    
+                    // Create service account JSON from environment variables
+                    String serviceAccountJson = String.format(
+                        "{\"type\":\"service_account\",\"project_id\":\"%s\",\"private_key\":\"%s\",\"client_email\":\"%s\"}",
+                        projectId, privateKey, clientEmail
+                    );
+                    
+                    FirebaseOptions options = FirebaseOptions.builder()
+                            .setCredentials(GoogleCredentials.fromStream(
+                                new java.io.ByteArrayInputStream(serviceAccountJson.getBytes())
+                            ))
+                            .build();
 
-                log.info("🔧 Firebase options built successfully");
-                log.info("🔧 Project ID: {}", options.getProjectId());
+                    log.info("🔧 Firebase options built successfully from environment");
+                    log.info("🔧 Project ID: {}", options.getProjectId());
 
-                if (FirebaseApp.getApps().isEmpty()) {
-                    FirebaseApp app = FirebaseApp.initializeApp(options);
-                    log.info("✅ Firebase initialized successfully: {}", app.getName());
+                    if (FirebaseApp.getApps().isEmpty()) {
+                        FirebaseApp app = FirebaseApp.initializeApp(options);
+                        log.info("✅ Firebase initialized successfully from environment: {}", app.getName());
+                    } else {
+                        log.info("ℹ️ Firebase already initialized");
+                    }
+                    return;
                 } else {
-                    log.info("ℹ️ Firebase already initialized");
+                    log.warn("⚠️ Firebase environment variables not found, Firebase authentication will be disabled");
+                    log.warn("⚠️ Set FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, and FIREBASE_CLIENT_EMAIL environment variables");
+                    return;
                 }
             }
         } catch (Exception e) {
-            log.error("❌ Error initializing Firebase: {}", e.getMessage(), e);
-            throw e;
+            log.error("❌ Firebase initialization failed: {}", e.getMessage());
+            log.warn("⚠️ Firebase authentication will be disabled");
+            // Don't throw the exception to allow the application to start without Firebase
         }
     }
 }

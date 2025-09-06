@@ -15,6 +15,7 @@ interface Card {
   currentState: string
   label: string
   assignedUser?: { id: string; name: string }
+  stateHistory?: string[] // ✅ Added stateHistory field
 }
 
 interface List {
@@ -255,8 +256,13 @@ export default function BoardPage() {
 
   const openCardHistory = async (card: Card) => {
     try {
-      const res = await api.get(`/cards/${card.id}/history`)
-      setCardHistory(res.data)
+      // ✅ Use the stateHistory from the card data if available, otherwise fetch from API
+      if (card.stateHistory && card.stateHistory.length > 0) {
+        setCardHistory(card.stateHistory)
+      } else {
+        const res = await api.get(`/cards/${card.id}/history`)
+        setCardHistory(res.data)
+      }
       setSelectedCard(card)
     } catch (err) {
       console.error("Failed to fetch card history:", err)

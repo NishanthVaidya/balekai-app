@@ -13,6 +13,7 @@ import balekai.designpatterns.factory.StandardBoardFactory;
 import balekai.designpatterns.factory.PrivateBoardFactory;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @RestController
@@ -34,6 +35,7 @@ public class BoardController {
 
     // ✅ AUTHENTICATED USER'S OWN BOARDS ONLY
     @GetMapping("/me")
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getMyBoards(HttpServletRequest request) {
         String uid = (String) request.getAttribute("firebaseUid");
         if (uid == null) {
@@ -41,15 +43,67 @@ public class BoardController {
         }
 
         List<Board> boards = boardRepository.findByOwnerId(uid);
+        
+        // Initialize lazy collections to avoid Hibernate lazy loading issues
+        boards.forEach(board -> {
+            if (board.getLists() != null) {
+                board.getLists().size(); // Force initialization
+                // Also initialize cards within each list
+                board.getLists().forEach(list -> {
+                    if (list.getCards() != null) {
+                        list.getCards().size(); // Force initialization
+                        // Initialize card properties
+                        list.getCards().forEach(card -> {
+                            if (card.getAssignedUser() != null) {
+                                card.getAssignedUser().getName(); // Force initialization
+                            }
+                            if (card.getComments() != null) {
+                                card.getComments().size(); // Force initialization
+                            }
+                            if (card.getStateHistory() != null) {
+                                card.getStateHistory().size(); // Force initialization
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        
         return ResponseEntity.ok(boards);
     }
 
     // ✅ ACCESSIBLE TO ALL - Public boards + own private boards
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<?> getAccessibleBoards(HttpServletRequest request) {
         String uid = (String) request.getAttribute("firebaseUid");
 
         List<Board> allBoards = boardRepository.findAll();
+
+        // Initialize lazy collections to avoid Hibernate lazy loading issues
+        allBoards.forEach(board -> {
+            if (board.getLists() != null) {
+                board.getLists().size(); // Force initialization
+                // Also initialize cards within each list
+                board.getLists().forEach(list -> {
+                    if (list.getCards() != null) {
+                        list.getCards().size(); // Force initialization
+                        // Initialize card properties
+                        list.getCards().forEach(card -> {
+                            if (card.getAssignedUser() != null) {
+                                card.getAssignedUser().getName(); // Force initialization
+                            }
+                            if (card.getComments() != null) {
+                                card.getComments().size(); // Force initialization
+                            }
+                            if (card.getStateHistory() != null) {
+                                card.getStateHistory().size(); // Force initialization
+                            }
+                        });
+                    }
+                });
+            }
+        });
 
         List<Board> accessibleBoards = allBoards.stream()
                 .filter(board -> !board.isAPrivate() || (uid != null && uid.equals(board.getOwnerId())))
@@ -61,13 +115,19 @@ public class BoardController {
 
     // ✅ CREATE BOARD
     @PostMapping
-    public ResponseEntity<Board> createBoard(@RequestBody BoardRequest boardRequest) {
-        Board board;
+    public ResponseEntity<Board> createBoard(@RequestBody BoardRequest boardRequest, HttpServletRequest request) {
+        // Get the authenticated user's ID from the request attributes
+        String authenticatedUserId = (String) request.getAttribute("firebaseUid");
+        if (authenticatedUserId == null) {
+            return ResponseEntity.status(401).body(null);
+        }
 
+        // Use the authenticated user's ID instead of the client-provided ownerId
+        Board board;
         if (boardRequest.isAPrivate()) {
-            board = privateBoardFactory.createBoard(boardRequest.getName(), boardRequest.getOwnerId());
+            board = privateBoardFactory.createBoard(boardRequest.getName(), authenticatedUserId);
         } else {
-            board = standardBoardFactory.createBoard(boardRequest.getName(), boardRequest.getOwnerId());
+            board = standardBoardFactory.createBoard(boardRequest.getName(), authenticatedUserId);
         }
 
         board.setAPrivate(boardRequest.isAPrivate());
@@ -88,9 +148,35 @@ public class BoardController {
 
     // ✅ GET BOARD BY ID
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public Board getBoard(@PathVariable Long id) {
-        return boardRepository.findById(id)
+        Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Board not found"));
+        
+        // Initialize lazy collections to avoid Hibernate lazy loading issues
+        if (board.getLists() != null) {
+            board.getLists().size(); // Force initialization
+            // Also initialize cards within each list
+            board.getLists().forEach(list -> {
+                if (list.getCards() != null) {
+                    list.getCards().size(); // Force initialization
+                    // Initialize card properties
+                    list.getCards().forEach(card -> {
+                        if (card.getAssignedUser() != null) {
+                            card.getAssignedUser().getName(); // Force initialization
+                        }
+                        if (card.getComments() != null) {
+                            card.getComments().size(); // Force initialization
+                        }
+                        if (card.getStateHistory() != null) {
+                            card.getStateHistory().size(); // Force initialization
+                        }
+                    });
+                }
+            });
+        }
+        
+        return board;
     }
 
     // ✅ UPDATE BOARD
