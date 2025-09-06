@@ -59,11 +59,6 @@ export function ResetPasswordForm() {
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      toast({
-        title: "Success!",
-        description: "Your password has been reset.",
-      })
-
       // Redirect to login after successful password reset
       router.push("/login")
     } catch (error) {

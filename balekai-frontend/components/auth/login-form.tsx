@@ -51,7 +51,6 @@ export function LoginForm() {
         name: data.email.split("@")[0],
       }))
 
-      toast({ title: "Success", description: "Logged in successfully." })
       router.push("/boards")
     } catch (error: unknown) {
       const errorMessage = (error as { response?: { data?: string } })?.response?.data || "Login failed. Please try again."
@@ -84,7 +83,6 @@ export function LoginForm() {
       )
 
       // For Google users, skip backend login - they'll be auto-created by FirebaseTokenFilter
-      toast({ title: "Success", description: "Logged in with Google." })
       router.push("/boards")
     } catch (error: unknown) {
       const description =

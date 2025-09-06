@@ -52,7 +52,6 @@ export function RegisterForm() {
         email: data.email,
       }))
 
-      toast({ title: "Success", description: "Registered successfully." })
       router.push("/boards")
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 
@@ -86,7 +85,6 @@ export function RegisterForm() {
       )
 
       // For Google users, skip backend registration - they'll be auto-created by FirebaseTokenFilter
-      toast({ title: "Success", description: "Signed up with Google." })
       router.push("/boards")
     } catch (error: unknown) {
       const description =
