@@ -9,7 +9,6 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
 import { Icons } from "../icons"
 
 const formSchema = z
@@ -28,8 +27,8 @@ export function ResetPasswordForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get("token")
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,15 +40,12 @@ export function ResetPasswordForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!token) {
-      toast({
-        title: "Error",
-        description: "Invalid or missing reset token.",
-        variant: "destructive",
-      })
+      setErrorMessage("Invalid or missing reset token.")
       return
     }
 
     setIsLoading(true)
+    setErrorMessage("") // Clear any previous error messages
 
     try {
       // This is where you would typically make an API call to reset the password
@@ -63,11 +59,7 @@ export function ResetPasswordForm() {
       router.push("/login")
     } catch (error) {
       console.error(error)
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      })
+      setErrorMessage("Something went wrong. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -77,6 +69,13 @@ export function ResetPasswordForm() {
     <div className="grid gap-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+              {errorMessage}
+            </div>
+          )}
+          
           <FormField
             control={form.control}
             name="password"

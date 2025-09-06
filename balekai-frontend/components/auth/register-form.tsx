@@ -14,7 +14,6 @@ import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
 import { signInWithGoogle } from "@/lib/firebase"
 
 const formSchema = z.object({
@@ -25,8 +24,8 @@ const formSchema = z.object({
 
 export function RegisterForm() {
   const router = useRouter()
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,6 +34,7 @@ export function RegisterForm() {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true)
+    setErrorMessage("") // Clear any previous error messages
     try {
       // Call backend register endpoint
       const response = await api.post("/auth/register", {
@@ -54,13 +54,9 @@ export function RegisterForm() {
 
       router.push("/boards")
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 
+      const errorMsg = error instanceof Error ? error.message : 
         (error as { response?: { data?: string } })?.response?.data || "Registration failed. Please try again."
-      toast({ 
-        title: "Registration failed", 
-        description: errorMessage, 
-        variant: "destructive" 
-      })
+      setErrorMessage(errorMsg)
     } finally {
       setIsLoading(false)
     }
@@ -68,6 +64,7 @@ export function RegisterForm() {
 
   const handleGoogleSignup = async () => {
     setIsLoading(true)
+    setErrorMessage("") // Clear any previous error messages
     try {
       const result = await signInWithGoogle()
       const user = result.user
@@ -87,10 +84,10 @@ export function RegisterForm() {
       // For Google users, skip backend registration - they'll be auto-created by FirebaseTokenFilter
       router.push("/boards")
     } catch (error: unknown) {
-      const description =
+      const errorMsg =
         (error as { message?: string })?.message ||
         "Google sign-up failed. Please try again."
-      toast({ title: "Sign-up failed", description, variant: "destructive" })
+      setErrorMessage(errorMsg)
     } finally {
       setIsLoading(false)
     }
@@ -100,6 +97,13 @@ export function RegisterForm() {
     <div className="space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+              {errorMessage}
+            </div>
+          )}
+          
           {/* Name */}
           <FormField
             control={form.control}
