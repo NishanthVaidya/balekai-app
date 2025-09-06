@@ -56,9 +56,15 @@ public class FirebaseConfig {
                     log.info("📖 Reading Firebase service account from environment variables...");
                     
                     // Create service account JSON from environment variables
+                    String privateKeyId = System.getenv("FIREBASE_PRIVATE_KEY_ID");
+                    String clientId = System.getenv("FIREBASE_CLIENT_ID");
+                    
+                    if (privateKeyId == null) privateKeyId = "default-key-id";
+                    if (clientId == null) clientId = "default-client-id";
+                    
                     String serviceAccountJson = String.format(
-                        "{\"type\":\"service_account\",\"project_id\":\"%s\",\"private_key\":\"%s\",\"client_email\":\"%s\"}",
-                        projectId, privateKey, clientEmail
+                        "{\"type\":\"service_account\",\"project_id\":\"%s\",\"private_key_id\":\"%s\",\"private_key\":\"%s\",\"client_email\":\"%s\",\"client_id\":\"%s\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_x509_cert_url\":\"https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%%40%s.iam.gserviceaccount.com\",\"universe_domain\":\"googleapis.com\"}",
+                        projectId, privateKeyId, privateKey, clientEmail, clientId, projectId
                     );
                     
                     FirebaseOptions options = FirebaseOptions.builder()
