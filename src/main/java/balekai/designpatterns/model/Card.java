@@ -34,7 +34,7 @@ public class Card {
     @ManyToOne
     private User assignedUser;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> comments = new ArrayList<>();
 
     private LocalDateTime createdAt;
@@ -42,6 +42,6 @@ public class Card {
     // 🚀 NEW FIELDS
     private String currentState;  // e.g., "To Do", "In Progress", "Done"
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> stateHistory = new ArrayList<>(); // ["Created -> To Do", "To Do -> In Progress"]
 }
