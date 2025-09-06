@@ -7,6 +7,7 @@
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/TrellloApplication.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/repository/CardRepository.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/model/Board.java
+/Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/service/FirebaseAuthService.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/service/BoardService.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/model/User.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/config/FirebaseConfig.java
@@ -29,4 +30,3 @@
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/config/WebSecurityConfig.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/config/WebConfig.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/request/RegisterRequest.java
-/Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/security/FirebaseTokenFilter.java

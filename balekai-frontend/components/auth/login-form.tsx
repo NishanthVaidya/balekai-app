@@ -11,7 +11,7 @@ import api from "@/app/utils/api"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { signInWithGoogle } from "@/lib/firebase"
+// import { signInWithGoogle } from "@/lib/firebase" // Google sign-in disabled
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -60,36 +60,8 @@ export function LoginForm() {
     }
   }
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true)
-    setErrorMessage("") // Clear any previous error messages
-    try {
-      const result = await signInWithGoogle()
-      const user = result.user
-      const idToken = await user.getIdToken()
-
-      // Store the Firebase ID token
-      localStorage.setItem("token", idToken)
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: user.uid,
-          name: user.displayName || "User",
-          email: user.email || "",
-        })
-      )
-
-      // For Google users, skip backend login - they'll be auto-created by FirebaseTokenFilter
-      router.push("/boards")
-    } catch (error: unknown) {
-      const errorMsg =
-        (error as { message?: string })?.message ||
-        "Google login failed. Please try again."
-      setErrorMessage(errorMsg)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // Google login functionality disabled
+  // const handleGoogleLogin = async () => { ... }
 
   return (
     <div className="balekai-card">
@@ -152,16 +124,7 @@ export function LoginForm() {
         </form>
       </Form>
 
-      <div className="mt-6">
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="w-full" 
-          onClick={handleGoogleLogin}
-        >
-          Continue with Google
-        </Button>
-      </div>
+      {/* Google sign-in button removed */}
 
       <div className="mt-4 text-center">
         <p className="text-sm text-gray-600">

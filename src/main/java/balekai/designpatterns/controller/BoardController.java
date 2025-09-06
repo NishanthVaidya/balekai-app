@@ -11,6 +11,7 @@ import balekai.designpatterns.repository.TrelloListRepository;
 import balekai.designpatterns.request.BoardRequest;
 import balekai.designpatterns.factory.StandardBoardFactory;
 import balekai.designpatterns.factory.PrivateBoardFactory;
+import balekai.designpatterns.service.FirebaseAuthService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,11 +34,14 @@ public class BoardController {
     @Autowired
     private PrivateBoardFactory privateBoardFactory;
 
+    @Autowired
+    private FirebaseAuthService firebaseAuthService;
+
     // ✅ AUTHENTICATED USER'S OWN BOARDS ONLY
     @GetMapping("/me")
     @Transactional(readOnly = true)
     public ResponseEntity<?> getMyBoards(HttpServletRequest request) {
-        String uid = (String) request.getAttribute("firebaseUid");
+        String uid = firebaseAuthService.authenticateAndGetUserId(request);
         if (uid == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
@@ -76,7 +80,7 @@ public class BoardController {
     @GetMapping
     @Transactional(readOnly = true)
     public ResponseEntity<?> getAccessibleBoards(HttpServletRequest request) {
-        String uid = (String) request.getAttribute("firebaseUid");
+        String uid = firebaseAuthService.authenticateAndGetUserId(request);
 
         List<Board> allBoards = boardRepository.findAll();
 
@@ -116,8 +120,8 @@ public class BoardController {
     // ✅ CREATE BOARD
     @PostMapping
     public ResponseEntity<Board> createBoard(@RequestBody BoardRequest boardRequest, HttpServletRequest request) {
-        // Get the authenticated user's ID from the request attributes
-        String authenticatedUserId = (String) request.getAttribute("firebaseUid");
+        // Get the authenticated user's ID from Firebase authentication
+        String authenticatedUserId = firebaseAuthService.authenticateAndGetUserId(request);
         if (authenticatedUserId == null) {
             return ResponseEntity.status(401).body(null);
         }

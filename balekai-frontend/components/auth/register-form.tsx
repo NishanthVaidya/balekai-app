@@ -14,7 +14,7 @@ import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { signInWithGoogle } from "@/lib/firebase"
+// import { signInWithGoogle } from "@/lib/firebase" // Google sign-in disabled
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name is required." }),
@@ -62,36 +62,8 @@ export function RegisterForm() {
     }
   }
 
-  const handleGoogleSignup = async () => {
-    setIsLoading(true)
-    setErrorMessage("") // Clear any previous error messages
-    try {
-      const result = await signInWithGoogle()
-      const user = result.user
-      const idToken = await user.getIdToken()
-
-      // Store the Firebase ID token
-      localStorage.setItem("token", idToken)
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: user.uid,
-          name: user.displayName || "User",
-          email: user.email || "",
-        })
-      )
-
-      // For Google users, skip backend registration - they'll be auto-created by FirebaseTokenFilter
-      router.push("/boards")
-    } catch (error: unknown) {
-      const errorMsg =
-        (error as { message?: string })?.message ||
-        "Google sign-up failed. Please try again."
-      setErrorMessage(errorMsg)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // Google signup functionality disabled
+  // const handleGoogleSignup = async () => { ... }
 
   return (
     <div className="space-y-6">
@@ -155,20 +127,7 @@ export function RegisterForm() {
         </form>
       </Form>
 
-      <div className="flex items-center justify-center">
-        <div className="w-full border-t border-gray-300" />
-        <span className="px-4 text-gray-500 text-sm">or</span>
-        <div className="w-full border-t border-gray-300" />
-      </div>
-
-
-      <Button
-        onClick={handleGoogleSignup}
-        variant="outline"
-        className="w-full text-gray-800 bg-white border border-gray-300 hover:bg-gray-100"
-      >
-        Continue with Google
-      </Button>
+      {/* Google sign-up button and divider removed */}
     </div>
   )
 }

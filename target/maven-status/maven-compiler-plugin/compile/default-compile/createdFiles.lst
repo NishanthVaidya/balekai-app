@@ -11,7 +11,6 @@ balekai/designpatterns/response/BoardResponse.class
 balekai/designpatterns/exception/GlobalExceptionHandler.class
 balekai/designpatterns/repository/BoardRepository.class
 balekai/designpatterns/service/BoardService.class
-balekai/designpatterns/security/FirebaseTokenFilter.class
 balekai/designpatterns/TrellloApplication.class
 balekai/designpatterns/config/FirebaseConfig.class
 balekai/designpatterns/model/TrelloList.class
@@ -26,6 +25,7 @@ balekai/designpatterns/controller/CardController.class
 balekai/designpatterns/controller/UserController.class
 balekai/designpatterns/controller/AuthController.class
 balekai/designpatterns/service/TrelloListService.class
+balekai/designpatterns/service/FirebaseAuthService.class
 balekai/designpatterns/config/DataLoader.class
 balekai/designpatterns/controller/BoardController.class
 balekai/designpatterns/request/LoginRequest.class
