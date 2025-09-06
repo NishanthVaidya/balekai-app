@@ -8,7 +8,7 @@ import balekai.designpatterns.model.User;
 import balekai.designpatterns.repository.UserRepository;
 
 @Configuration
-@Profile("!test") // Don't load this configuration in test profile
+@Profile("!test & !prod") // Don't load this configuration in test or production profiles
 public class DataLoader {
 
     @Bean

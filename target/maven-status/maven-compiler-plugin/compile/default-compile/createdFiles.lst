@@ -8,7 +8,6 @@ balekai/designpatterns/request/RegisterRequest.class
 balekai/designpatterns/factory/PrivateBoardFactory.class
 balekai/designpatterns/service/JwtService.class
 balekai/designpatterns/response/BoardResponse.class
-balekai/designpatterns/config/CorsConfig$1.class
 balekai/designpatterns/exception/GlobalExceptionHandler.class
 balekai/designpatterns/repository/BoardRepository.class
 balekai/designpatterns/service/BoardService.class
@@ -29,7 +28,6 @@ balekai/designpatterns/controller/AuthController.class
 balekai/designpatterns/service/TrelloListService.class
 balekai/designpatterns/config/DataLoader.class
 balekai/designpatterns/controller/BoardController.class
-balekai/designpatterns/config/CorsConfig.class
 balekai/designpatterns/request/LoginRequest.class
 balekai/designpatterns/config/WebConfig.class
 balekai/designpatterns/controller/TrelloListController.class

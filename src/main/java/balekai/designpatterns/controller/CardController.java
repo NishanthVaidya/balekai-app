@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -54,16 +55,45 @@ public class CardController {
 
     // 🆕 Get Card by ID
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<Card> getCardById(@PathVariable Long id) {
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + id));
+        
+        // Initialize lazy collections to avoid Hibernate lazy loading issues
+        if (card.getAssignedUser() != null) {
+            card.getAssignedUser().getName(); // Force initialization
+        }
+        if (card.getComments() != null) {
+            card.getComments().size(); // Force initialization
+        }
+        if (card.getStateHistory() != null) {
+            card.getStateHistory().size(); // Force initialization
+        }
+        
         return ResponseEntity.ok(card);
     }
 
     // 🆕 Get All Cards
     @GetMapping
+    @Transactional(readOnly = true)
     public List<Card> getAllCards() {
-        return cardRepository.findAll();
+        List<Card> cards = cardRepository.findAll();
+        
+        // Initialize lazy collections to avoid Hibernate lazy loading issues
+        cards.forEach(card -> {
+            if (card.getAssignedUser() != null) {
+                card.getAssignedUser().getName(); // Force initialization
+            }
+            if (card.getComments() != null) {
+                card.getComments().size(); // Force initialization
+            }
+            if (card.getStateHistory() != null) {
+                card.getStateHistory().size(); // Force initialization
+            }
+        });
+        
+        return cards;
     }
 
     // 🆕 Delete Card by ID
@@ -169,9 +199,15 @@ public class CardController {
 
     // ✅ View Card Logs/History
     @GetMapping("/{cardId}/history")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<String>> getCardHistory(@PathVariable Long cardId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
+
+        // Initialize lazy collections to avoid Hibernate lazy loading issues
+        if (card.getStateHistory() != null) {
+            card.getStateHistory().size(); // Force initialization
+        }
 
         return ResponseEntity.ok(card.getStateHistory());
     }

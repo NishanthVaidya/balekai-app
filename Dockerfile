@@ -5,10 +5,10 @@ FROM --platform=linux/amd64 openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the JAR file
-COPY target/kardo-1.0-SNAPSHOT.jar app.jar
+COPY target/balekai-1.0-SNAPSHOT.jar app.jar
 
-# Copy Firebase configuration from target/classes (Maven build output)
-COPY target/classes/firebase-service-account.json firebase-service-account.json
+# Copy Firebase configuration from target/classes (Maven build output) if it exists
+# COPY target/classes/firebase-service-account.json firebase-service-account.json
 
 # Expose port 8080
 EXPOSE 8080
@@ -17,4 +17,4 @@ EXPOSE 8080
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
 # Run the application with test profile (no database required)
-CMD ["java", "-Xmx512m", "-Xms256m", "-jar", "app.jar", "--spring.profiles.active=test"]
+CMD ["java", "-Xmx512m", "-Xms256m", "-jar", "app.jar", "--spring.profiles.active=prod"]

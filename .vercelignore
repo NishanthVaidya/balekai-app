@@ -1,0 +1,23 @@
+# Exclude large files and build artifacts
+frontend.zip
+target/
+backend-backup-*/
+frontend-backup/
+*.log
+*.jar
+*.iml
+.git/
+.idea/
+.vscode/
+.DS_Store
+
+# Exclude backend files
+src/
+pom.xml
+Dockerfile*
+taskdef.json
+new-task-definition.json
+*.sh
+*.md
+!README.md
+!vercel.json
