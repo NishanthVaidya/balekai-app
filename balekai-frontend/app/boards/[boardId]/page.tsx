@@ -445,6 +445,12 @@ export default function BoardPage() {
         })
         
         setBoard(updatedBoard)
+        
+        // If the dragged card is currently selected, update the selectedCard and cardHistory
+        if (selectedCard && selectedCard.id === draggedCard.card.id) {
+          setSelectedCard(updatedCardFromBackend)
+          setCardHistory(updatedCardFromBackend.stateHistory || [])
+        }
       } else {
         // For temporary cards, just update the UI state
         const stateHistoryEntry = `${draggedCard.card.currentState} → ${targetList.name} at ${new Date().toLocaleString()}`
@@ -508,6 +514,18 @@ export default function BoardPage() {
       })
 
       setBoard(updatedBoard)
+      
+      // If the dragged card is currently selected, update the selectedCard and cardHistory
+      if (selectedCard && selectedCard.id === draggedCard.card.id) {
+        const updatedCard = {
+          ...draggedCard.card,
+          currentState: targetList.name,
+          stateHistory: [...(draggedCard.card.stateHistory || []), stateHistoryEntry]
+        }
+        setSelectedCard(updatedCard)
+        setCardHistory(updatedCard.stateHistory || [])
+      }
+      
       setDraggedCard(null)
     }
   }
