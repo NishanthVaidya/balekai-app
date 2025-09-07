@@ -3,6 +3,7 @@ package balekai.designpatterns.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import balekai.designpatterns.model.Card;
 import balekai.designpatterns.model.TrelloList;
 import balekai.designpatterns.repository.CardRepository;
@@ -54,5 +55,23 @@ public class CardService {
 
     public void deleteCard(Long id) {
         cardRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Card transitionCardState(Long cardId, String newState) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
+
+        String previousState = card.getCurrentState();
+        card.setCurrentState(newState);
+
+        if (card.getStateHistory() == null) {
+            card.setStateHistory(new ArrayList<>());
+        }
+        
+        String historyEntry = (previousState == null ? "Created" : previousState) + " → " + newState + " at " + LocalDateTime.now();
+        card.getStateHistory().add(historyEntry);
+
+        return cardRepository.save(card);
     }
 }

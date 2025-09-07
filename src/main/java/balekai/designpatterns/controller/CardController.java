@@ -6,7 +6,7 @@ import balekai.designpatterns.model.User;
 import balekai.designpatterns.repository.CardRepository;
 import balekai.designpatterns.repository.TrelloListRepository;
 import balekai.designpatterns.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import balekai.designpatterns.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/cards")
@@ -28,6 +27,7 @@ public class CardController {
     private final CardRepository cardRepository;
     private final TrelloListRepository trelloListRepository;
     private final UserRepository userRepository;
+    private final CardService cardService;
 
     // 🆕 Create Card only in "To Do" lists
     @PostMapping
@@ -111,20 +111,7 @@ public class CardController {
             @PathVariable Long cardId,
             @RequestParam String newState
     ) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
-
-        String previousState = card.getCurrentState();
-        card.setCurrentState(newState);
-
-        if (card.getStateHistory() == null) {
-            card.setStateHistory(new ArrayList<>());
-        }
-        card.getStateHistory().add(
-                (previousState == null ? "Created" : previousState) + " → " + newState + " at " + LocalDateTime.now()
-        );
-
-        cardRepository.save(card);
+        cardService.transitionCardState(cardId, newState);
         return ResponseEntity.ok("Card state updated successfully!");
     }
 
@@ -148,12 +135,24 @@ public class CardController {
 
     // ✅ Assign or Reassign a Card to a User with history
     @PutMapping("/{cardId}/assign")
+    @Transactional
     public ResponseEntity<String> assignCardToUser(
             @PathVariable Long cardId,
             @RequestParam(required = false) String userId
     ) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
+
+        // Force initialization of lazy collections to prevent Hibernate lazy loading issues
+        if (card.getStateHistory() != null) {
+            card.getStateHistory().size(); // Force initialization
+        }
+        if (card.getComments() != null) {
+            card.getComments().size(); // Force initialization
+        }
+        if (card.getAssignedUser() != null) {
+            card.getAssignedUser().getName(); // Force initialization
+        }
 
         User previousUser = card.getAssignedUser();
 
@@ -204,7 +203,7 @@ public class CardController {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
 
-        // Initialize lazy collections to avoid Hibernate lazy loading issues
+        // Force initialization of lazy collections to prevent Hibernate lazy loading issues
         if (card.getStateHistory() != null) {
             card.getStateHistory().size(); // Force initialization
         }

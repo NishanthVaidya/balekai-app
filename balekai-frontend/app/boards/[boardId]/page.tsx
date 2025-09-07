@@ -242,7 +242,11 @@ export default function BoardPage() {
     try {
       await api.put(`/cards/${selectedCard.id}/transition?newState=${newState}`)
       const targetList = board.lists.find((l) => l.name.toLowerCase() === newState.toLowerCase())
-      if (!targetList) return
+      if (!targetList) {
+        console.error(`Target list not found for state: ${newState}. Available lists:`, board.lists.map(l => l.name))
+        alert(`Error: Could not find list for state "${newState}". Please try again.`)
+        return
+      }
 
       await api.put(`/cards/${selectedCard.id}/move?listId=${targetList.id}`)
 
@@ -274,9 +278,19 @@ export default function BoardPage() {
       
       // ✅ Update card history display
       setCardHistory([...(selectedCard.stateHistory || []), stateHistoryEntry])
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to change card state:", err)
-      alert("Failed to change card state. Please try again.")
+      if (err && typeof err === 'object' && 'response' in err) {
+        // Server responded with error status
+        const axiosError = err as { response: { data?: string; statusText?: string } }
+        alert(`Failed to change card state: ${axiosError.response.data || axiosError.response.statusText}. Please try again.`)
+      } else if (err && typeof err === 'object' && 'request' in err) {
+        // Request was made but no response received
+        alert("Failed to change card state: Network error. Please check your connection and try again.")
+      } else {
+        // Something else happened
+        alert("Failed to change card state: Unexpected error. Please try again.")
+      }
     }
   }
 
