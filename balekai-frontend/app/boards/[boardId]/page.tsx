@@ -296,13 +296,21 @@ export default function BoardPage() {
 
   const openCardHistory = async (card: Card) => {
     try {
-      // ✅ Use the stateHistory from the card data if available, otherwise fetch from API
-      if (card.stateHistory && card.stateHistory.length > 0) {
-        setCardHistory(card.stateHistory)
-      } else if (isValidCardId(card.id)) {
-        // Only fetch from API for valid card IDs
+      // Always fetch the latest history from the backend for valid cards
+      if (isValidCardId(card.id)) {
         const res = await api.get(`/cards/${card.id}/history`)
         setCardHistory(res.data)
+        // Update the card in the board state with the latest history
+        if (board) {
+          const updatedBoard = { ...board }
+          updatedBoard.lists = updatedBoard.lists.map((list) => ({
+            ...list,
+            cards: list.cards.map((c) => 
+              c.id === card.id ? { ...c, stateHistory: res.data } : c
+            ),
+          }))
+          setBoard(updatedBoard)
+        }
       } else {
         // For temporary cards, show empty history with a note
         setCardHistory(["This is a temporary card. Save it to view activity history."])
@@ -310,8 +318,12 @@ export default function BoardPage() {
       setSelectedCard(card)
     } catch (err) {
       console.error("Failed to fetch card history:", err)
-      // If API fails, still open the card details with empty history
-      setCardHistory([])
+      // Fallback to using the card's existing stateHistory if API fails
+      if (card.stateHistory && card.stateHistory.length > 0) {
+        setCardHistory(card.stateHistory)
+      } else {
+        setCardHistory([])
+      }
       setSelectedCard(card)
     }
   }
@@ -410,26 +422,58 @@ export default function BoardPage() {
         // Update both the list and the state
         await api.put(`/cards/${draggedCard.card.id}/move?listId=${targetListId}`)
         await api.put(`/cards/${draggedCard.card.id}/transition?newState=${targetList.name}`)
+        
+        // Fetch the updated card with complete history from backend
+        const updatedCardResponse = await api.get(`/cards/${draggedCard.card.id}`)
+        const updatedCardFromBackend = updatedCardResponse.data
+        
+        const updatedBoard = { ...board }
+        updatedBoard.lists = updatedBoard.lists.map((list) => {
+          if (list.id === draggedCard.fromListId) {
+            return {
+              ...list,
+              cards: list.cards.filter((c) => c.id !== draggedCard.card.id),
+            }
+          }
+          if (list.id === targetListId) {
+            return {
+              ...list,
+              cards: [...list.cards, updatedCardFromBackend],
+            }
+          }
+          return list
+        })
+        
+        setBoard(updatedBoard)
+      } else {
+        // For temporary cards, just update the UI state
+        const stateHistoryEntry = `${draggedCard.card.currentState} → ${targetList.name} at ${new Date().toLocaleString()}`
+        
+        const updatedBoard = { ...board }
+        updatedBoard.lists = updatedBoard.lists.map((list) => {
+          if (list.id === draggedCard.fromListId) {
+            return {
+              ...list,
+              cards: list.cards.filter((c) => c.id !== draggedCard.card.id),
+            }
+          }
+          if (list.id === targetListId) {
+            const updatedCard = {
+              ...draggedCard.card,
+              currentState: targetList.name,
+              stateHistory: [...(draggedCard.card.stateHistory || []), stateHistoryEntry]
+            }
+            return {
+              ...list,
+              cards: [...list.cards, updatedCard],
+            }
+          }
+          return list
+        })
+        
+        setBoard(updatedBoard)
       }
 
-      const updatedBoard = { ...board }
-      updatedBoard.lists = updatedBoard.lists.map((list) => {
-        if (list.id === draggedCard.fromListId) {
-          return {
-            ...list,
-            cards: list.cards.filter((c) => c.id !== draggedCard.card.id),
-          }
-        }
-        if (list.id === targetListId) {
-          return {
-            ...list,
-            cards: [...list.cards, { ...draggedCard.card, currentState: targetList.name }],
-          }
-        }
-        return list
-      })
-
-      setBoard(updatedBoard)
       setDraggedCard(null)
     } catch (err) {
       console.error("Failed to move card:", err)
@@ -438,6 +482,9 @@ export default function BoardPage() {
       const targetList = board.lists.find((l) => l.id === targetListId)
       if (!targetList) return
 
+      // Create state history entry for the drag-and-drop operation (even in error case)
+      const stateHistoryEntry = `${draggedCard.card.currentState} → ${targetList.name} at ${new Date().toLocaleString()}`
+
       const updatedBoard = { ...board }
       updatedBoard.lists = updatedBoard.lists.map((list) => {
         if (list.id === draggedCard.fromListId) {
@@ -447,9 +494,14 @@ export default function BoardPage() {
           }
         }
         if (list.id === targetListId) {
+          const updatedCard = {
+            ...draggedCard.card,
+            currentState: targetList.name,
+            stateHistory: [...(draggedCard.card.stateHistory || []), stateHistoryEntry]
+          }
           return {
             ...list,
-            cards: [...list.cards, { ...draggedCard.card, currentState: targetList.name }],
+            cards: [...list.cards, updatedCard],
           }
         }
         return list
