@@ -107,55 +107,11 @@ export default function BoardPage() {
     fetchUsers()
   }, [])
 
-  const handleAssignUser = async (userId: string | number) => {
-    if (!selectedCard) return
-    
-    // ✅ Add validation to prevent API calls with temporary card IDs
-    if (!isValidCardId(selectedCard.id)) {
-      console.warn("Cannot assign user to temporary card. Please save the card first.")
-      alert("Cannot assign user to unsaved card. Please save the card first.")
-      return
-    }
-    
-    // Convert to string to ensure compatibility with backend
-    const stringUserId = String(userId)
-    
-    try {
-      await api.put(`/cards/${selectedCard.id}/assign?userId=${stringUserId}`)
-      const assignedUser = stringUserId ? allUsers.find((u) => u.id === stringUserId) : null
-      
-      // ✅ Update state history
-      const assignmentEntry = assignedUser 
-        ? `Assigned to ${assignedUser.name} at ${new Date().toLocaleString()}`
-        : `Unassigned at ${new Date().toLocaleString()}`
-      
-      const updatedCard = { 
-        ...selectedCard, 
-        assignedUser: assignedUser || undefined,
-        stateHistory: [...(selectedCard.stateHistory || []), assignmentEntry]
-      }
-      
-      setSelectedCard(updatedCard)
-      
-      // ✅ Update card history display
-      setCardHistory([...(selectedCard.stateHistory || []), assignmentEntry])
-
-      // Update the board state to reflect the change
-      if (board) {
-        const updatedBoard = { ...board }
-        updatedBoard.lists = updatedBoard.lists.map((list) => ({
-          ...list,
-          cards: list.cards.map((card) =>
-            card.id === selectedCard.id ? updatedCard : card,
-          ),
-        }))
-        setBoard(updatedBoard)
-      }
-    } catch (err) {
-      console.error("Failed to assign user:", err)
-      alert("Failed to assign user. Please try again.")
-    }
-  }
+  // ✅ Removed handleAssignUser function since we're hiding assignment
+  // const handleAssignUser = async (userId: string | number) => {
+  //   if (!selectedCard) return
+  //   // ... existing assignment logic
+  // }
 
   const handleSaveMetadata = async () => {
     if (!selectedCard) return
@@ -690,12 +646,7 @@ export default function BoardPage() {
                           {card.currentState}
                         </span>
 
-                        {card.assignedUser && (
-                          <span className="inline-flex items-center text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                            <span className="mr-1 text-xs">👤</span>
-                            {card.assignedUser.name}
-                          </span>
-                        )}
+                        {/* ✅ Removed assigned user display from cards */}
                       </div>
 
                       {/* Card ID indicator for debugging */}
@@ -845,21 +796,7 @@ export default function BoardPage() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Assigned To</label>
-                  <select
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-gray-800"
-                    value={selectedCard.assignedUser?.id || ""}
-                    onChange={(e) => handleAssignUser(e.target.value)}
-                  >
-                    <option value="">-- Unassigned --</option>
-                    {allUsers.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {/* ✅ Removed Assign To section completely */}
 
                 <div>
                   <h3 className="text-sm font-medium text-gray-700 mb-2">Activity Log</h3>

@@ -46,10 +46,34 @@ export function LoginForm() {
       
       // Store the JWT token from backend
       localStorage.setItem("token", token)
-      localStorage.setItem("user", JSON.stringify({
-        email: data.email,
-        name: data.email.split("@")[0],
-      }))
+      
+      // Fetch user data from backend to get complete user information
+      try {
+        const userResponse = await api.get("/users")
+        const users = userResponse.data
+        const currentUser = users.find((user: { id: string; email: string; name: string }) => user.email === data.email)
+        
+        if (currentUser) {
+          localStorage.setItem("user", JSON.stringify({
+            id: currentUser.id,
+            email: currentUser.email,
+            name: currentUser.name,
+          }))
+        } else {
+          // Fallback if user not found
+          localStorage.setItem("user", JSON.stringify({
+            email: data.email,
+            name: data.email.split("@")[0],
+          }))
+        }
+      } catch (userError) {
+        console.warn("Could not fetch user data:", userError)
+        // Fallback if user fetch fails
+        localStorage.setItem("user", JSON.stringify({
+          email: data.email,
+          name: data.email.split("@")[0],
+        }))
+      }
 
       router.push("/boards")
     } catch (error: unknown) {

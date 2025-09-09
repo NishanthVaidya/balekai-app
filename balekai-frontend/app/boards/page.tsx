@@ -17,7 +17,7 @@ interface Board {
 const BoardsPage = () => {
   const [boards, setBoards] = useState<Board[]>([])
   const [newBoardName, setNewBoardName] = useState("")
-  const [isPrivate, setIsPrivate] = useState(false)
+  const [isPrivate, setIsPrivate] = useState(true) // ✅ All boards private by default
   const [draggedId, setDraggedId] = useState<number | null>(null)
   const [currentUserId, setCurrentUserId] = useState("test-user") // Replace with real auth in production
   const [username, setUsername] = useState("User") // For the navbar
@@ -83,7 +83,7 @@ const handleCreateBoard = async () => {
       name: newBoardName,
       ownerId: userData.id,     // fallback to currentUserId just in case
       ownerName: userData.name,        // send the owner's display name
-      isPrivate,                                 // now correctly interpreted as a boolean
+      isPrivate: true, // ✅ Always create private boards
     })
 
     // Refresh the board list
@@ -95,7 +95,7 @@ const handleCreateBoard = async () => {
 
     // Reset form
     setNewBoardName("")
-    setIsPrivate(false)
+    setIsPrivate(true) // ✅ Reset to private
   } catch (err) {
     console.error("Failed to create board:", err)
   }
@@ -163,10 +163,6 @@ const handleCreateBoard = async () => {
     setDraggedId(null)
   }
 
-  const getVisibilityBadgeClass = (isPrivate: boolean) => {
-    return isPrivate ? "bg-purple-100 text-purple-800" : "bg-green-100 text-green-800"
-  }
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
@@ -199,9 +195,7 @@ const handleCreateBoard = async () => {
                 <Link href={`/boards/${board.id}`} className="flex-1 truncate text-gray-800 font-medium">
                   {board.name}
                 </Link>
-                <span className={`ml-2 px-1.5 py-0.5 text-xs rounded-full ${getVisibilityBadgeClass(board.isPrivate)}`}>
-                  {board.isPrivate ? "🔒" : "🌐"}
-                </span>
+                {/* ✅ Removed privacy icon from sidebar */}
               </div>
             ))}
           </div>
@@ -222,15 +216,7 @@ const handleCreateBoard = async () => {
                   className="flex-1 p-2 border border-gray-300 rounded-md text-sm text-gray-800 placeholder-gray-500 focus:ring-balekai-500 focus:border-balekai-500"
                 />
                 <div className="flex items-center">
-                  <label className="inline-flex items-center mr-4">
-                    <input
-                      type="checkbox"
-                      checked={isPrivate}
-                      onChange={(e) => setIsPrivate(e.target.checked)}
-                      className="rounded border-gray-300 text-balekai-600 shadow-sm focus:border-balekai-300 focus:ring focus:ring-balekai-200 focus:ring-opacity-50 mr-2"
-                    />
-                    <span className="text-sm text-gray-700">Private</span>
-                  </label>
+                  {/* ✅ Removed privacy checkbox - all boards are private by default */}
                   <button
                     onClick={handleCreateBoard}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
@@ -299,14 +285,7 @@ const handleCreateBoard = async () => {
                           </button>
                         </div>
                       )}
-                      <div className="flex-shrink-0 ml-2">
-                        <span
-                          className={`inline-flex items-center px-2 py-1 text-xs rounded-full ${getVisibilityBadgeClass(board.isPrivate)}`}
-                        >
-                          <span className="mr-1 text-xs">{board.isPrivate ? "🔒" : "🌐"}</span>
-                          {board.isPrivate ? "Private" : "Public"}
-                        </span>
-                      </div>
+                      {/* ✅ Removed privacy badge from board cards */}
                     </div>
 
                     {!editingBoardId && (

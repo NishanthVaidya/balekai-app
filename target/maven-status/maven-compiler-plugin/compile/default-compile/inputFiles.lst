@@ -1,5 +1,6 @@
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/factory/BoardFactory.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/controller/CardController.java
+/Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/config/CorsConfig.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/controller/BoardController.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/request/BoardRequest.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/service/CardService.java
@@ -7,6 +8,7 @@
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/TrellloApplication.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/repository/CardRepository.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/model/Board.java
+/Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/security/JwtAuthenticationFilter.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/service/FirebaseAuthService.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/service/BoardService.java
 /Users/nishanthvaidya/Desktop/OOD/Balekai/src/main/java/balekai/designpatterns/model/User.java

@@ -3,10 +3,12 @@ package balekai.designpatterns.controller;
 import balekai.designpatterns.model.Card;
 import balekai.designpatterns.model.TrelloList;
 import balekai.designpatterns.model.User;
+import balekai.designpatterns.model.Board;
 import balekai.designpatterns.repository.CardRepository;
 import balekai.designpatterns.repository.TrelloListRepository;
 import balekai.designpatterns.repository.UserRepository;
 import balekai.designpatterns.service.CardService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +33,30 @@ public class CardController {
 
     // 🆕 Create Card only in "To Do" lists
     @PostMapping
-    public ResponseEntity<?> createCard(@RequestBody Card card) {
+    public ResponseEntity<?> createCard(@RequestBody Card card, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         if (card.getList() == null || card.getList().getId() == null) {
             return ResponseEntity.badRequest().body("List is required to create a card.");
         }
 
         TrelloList list = trelloListRepository.findById(card.getList().getId())
                 .orElseThrow(() -> new RuntimeException("List not found with id: " + card.getList().getId()));
+
+        // Check if user has access to this board
+        Board board = list.getBoard();
+        if (board != null && board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+            return ResponseEntity.status(403).body("Access denied: Cannot create cards in private boards you don't own");
+        }
 
         if (!"To Do".equalsIgnoreCase(list.getName())) {
             return ResponseEntity.badRequest().body("Cards can only be created in the 'To Do' list.");
@@ -56,9 +75,29 @@ public class CardController {
     // 🆕 Get Card by ID
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public ResponseEntity<Card> getCardById(@PathVariable Long id) {
+    public ResponseEntity<Card> getCardById(@PathVariable Long id, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + id));
+
+        // Check if user has access to this card's board
+        TrelloList list = card.getList();
+        if (list != null && list.getBoard() != null) {
+            Board board = list.getBoard();
+            if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+        }
         
         // Initialize lazy collections to avoid Hibernate lazy loading issues
         if (card.getAssignedUser() != null) {
@@ -138,10 +177,39 @@ public class CardController {
     @Transactional
     public ResponseEntity<String> assignCardToUser(
             @PathVariable Long cardId,
-            @RequestParam(required = false) String userId
+            @RequestParam(required = false) String userId,
+            HttpServletRequest request
     ) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
+
+        // Check if the card belongs to a private board
+        TrelloList list = card.getList();
+        if (list != null && list.getBoard() != null) {
+            Board board = list.getBoard();
+            if (board.isAPrivate()) {
+                // For private boards, only the owner can assign cards, and only to themselves
+                if (!board.getOwnerId().equals(authenticatedUser.getId())) {
+                    return ResponseEntity.status(403).body("Access denied: Only the board owner can assign cards in private boards");
+                }
+                
+                // In private boards, cards can only be assigned to the board owner
+                if (userId != null && !userId.trim().isEmpty() && !userId.equals(authenticatedUser.getId())) {
+                    return ResponseEntity.status(403).body("Access denied: Cards in private boards can only be assigned to the board owner");
+                }
+            }
+        }
 
         // Force initialization of lazy collections to prevent Hibernate lazy loading issues
         if (card.getStateHistory() != null) {

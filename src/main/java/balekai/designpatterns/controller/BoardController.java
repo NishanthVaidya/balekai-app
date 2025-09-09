@@ -11,7 +11,8 @@ import balekai.designpatterns.repository.TrelloListRepository;
 import balekai.designpatterns.request.BoardRequest;
 import balekai.designpatterns.factory.StandardBoardFactory;
 import balekai.designpatterns.factory.PrivateBoardFactory;
-import balekai.designpatterns.service.FirebaseAuthService;
+import balekai.designpatterns.repository.UserRepository;
+import balekai.designpatterns.model.User;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,18 +36,24 @@ public class BoardController {
     private PrivateBoardFactory privateBoardFactory;
 
     @Autowired
-    private FirebaseAuthService firebaseAuthService;
+    private UserRepository userRepository;
 
     // ✅ AUTHENTICATED USER'S OWN BOARDS ONLY
     @GetMapping("/me")
     @Transactional(readOnly = true)
     public ResponseEntity<?> getMyBoards(HttpServletRequest request) {
-        String uid = firebaseAuthService.authenticateAndGetUserId(request);
-        if (uid == null) {
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        List<Board> boards = boardRepository.findByOwnerId(uid);
+        // Find user by email to get their ID
+        User user = userRepository.findByEmail(userEmail).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
+        List<Board> boards = boardRepository.findByOwnerId(user.getId());
         
         // Initialize lazy collections to avoid Hibernate lazy loading issues
         boards.forEach(board -> {
@@ -80,7 +87,19 @@ public class BoardController {
     @GetMapping
     @Transactional(readOnly = true)
     public ResponseEntity<?> getAccessibleBoards(HttpServletRequest request) {
-        String uid = firebaseAuthService.authenticateAndGetUserId(request);
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        final String uid;
+        
+        if (userEmail != null) {
+            User user = userRepository.findByEmail(userEmail).orElse(null);
+            if (user != null) {
+                uid = user.getId();
+            } else {
+                uid = null;
+            }
+        } else {
+            uid = null;
+        }
 
         List<Board> allBoards = boardRepository.findAll();
 
@@ -120,21 +139,25 @@ public class BoardController {
     // ✅ CREATE BOARD
     @PostMapping
     public ResponseEntity<Board> createBoard(@RequestBody BoardRequest boardRequest, HttpServletRequest request) {
-        // Get the authenticated user's ID from Firebase authentication
-        String authenticatedUserId = firebaseAuthService.authenticateAndGetUserId(request);
+        // Get the authenticated user's ID from JWT authentication
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User user = userRepository.findByEmail(userEmail).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        String authenticatedUserId = user.getId();
         if (authenticatedUserId == null) {
             return ResponseEntity.status(401).body(null);
         }
 
         // Use the authenticated user's ID instead of the client-provided ownerId
-        Board board;
-        if (boardRequest.isAPrivate()) {
-            board = privateBoardFactory.createBoard(boardRequest.getName(), authenticatedUserId);
-        } else {
-            board = standardBoardFactory.createBoard(boardRequest.getName(), authenticatedUserId);
-        }
-
-        board.setAPrivate(boardRequest.isAPrivate());
+        // ✅ Always create private boards
+        Board board = privateBoardFactory.createBoard(boardRequest.getName(), authenticatedUserId);
+        board.setAPrivate(true); // ✅ Force all boards to be private
         board.setOwnerName(boardRequest.getOwnerName());
 
         Board savedBoard = boardRepository.save(board);

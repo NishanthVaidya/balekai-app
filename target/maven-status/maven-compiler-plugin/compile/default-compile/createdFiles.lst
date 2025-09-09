@@ -1,3 +1,4 @@
+balekai/designpatterns/security/JwtAuthenticationFilter.class
 balekai/designpatterns/config/FilterConfig.class
 balekai/designpatterns/model/User.class
 balekai/designpatterns/model/User$UserBuilder.class
@@ -13,6 +14,7 @@ balekai/designpatterns/repository/BoardRepository.class
 balekai/designpatterns/service/BoardService.class
 balekai/designpatterns/TrellloApplication.class
 balekai/designpatterns/config/FirebaseConfig.class
+balekai/designpatterns/controller/UserController$UserUpdateRequest.class
 balekai/designpatterns/model/TrelloList.class
 balekai/designpatterns/repository/UserRepository.class
 balekai/designpatterns/exception/GlobalExceptionHandler$ValidationErrorResponse.class
@@ -28,6 +30,7 @@ balekai/designpatterns/service/TrelloListService.class
 balekai/designpatterns/service/FirebaseAuthService.class
 balekai/designpatterns/config/DataLoader.class
 balekai/designpatterns/controller/BoardController.class
+balekai/designpatterns/config/CorsConfig.class
 balekai/designpatterns/request/LoginRequest.class
 balekai/designpatterns/config/WebConfig.class
 balekai/designpatterns/controller/TrelloListController.class
