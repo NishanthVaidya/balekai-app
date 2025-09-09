@@ -17,7 +17,8 @@ interface Board {
 const BoardsPage = () => {
   const [boards, setBoards] = useState<Board[]>([])
   const [newBoardName, setNewBoardName] = useState("")
-  const [isPrivate, setIsPrivate] = useState(true) // ✅ All boards private by default
+  // ✅ All boards are private by default - no need for state since it's always true
+  // const [isPrivate, setIsPrivate] = useState(true)
   const [draggedId, setDraggedId] = useState<number | null>(null)
   const [currentUserId, setCurrentUserId] = useState("test-user") // Replace with real auth in production
   const [username, setUsername] = useState("User") // For the navbar
@@ -95,7 +96,7 @@ const handleCreateBoard = async () => {
 
     // Reset form
     setNewBoardName("")
-    setIsPrivate(true) // ✅ Reset to private
+    // ✅ No need to reset isPrivate since all boards are always private
   } catch (err) {
     console.error("Failed to create board:", err)
   }

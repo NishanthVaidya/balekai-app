@@ -31,10 +31,11 @@ interface Board {
   ownerName?: string
 }
 
-interface UserType {
-  id: string
-  name: string
-}
+// ✅ Removed UserType interface since we're not using assignment functionality
+// interface UserType {
+//   id: string
+//   name: string
+// }
 
 interface BoardSummary {
   id: number
@@ -58,7 +59,8 @@ export default function BoardPage() {
 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null)
   const [cardHistory, setCardHistory] = useState<string[]>([])
-  const [allUsers, setAllUsers] = useState<UserType[]>([])
+  // ✅ Removed allUsers state since we're not using assignment functionality
+  // const [allUsers, setAllUsers] = useState<any[]>([])
 
   useEffect(() => {
     const fetchBoard = async () => {
@@ -88,24 +90,23 @@ export default function BoardPage() {
     fetchAllBoards()
   }, [currentUserId])
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await api.get("/users")
-        // ✅ Ensure user data is properly formatted
-        const users = res.data.map((user: { id: string | number; name?: string }) => ({
-          id: String(user.id), // Ensure ID is string
-          name: user.name || "Unknown User"
-        }))
-        setAllUsers(users)
-      } catch (err) {
-        console.error("Failed to fetch users:", err)
-        // Set empty array on error
-        setAllUsers([])
-      }
-    }
-    fetchUsers()
-  }, [])
+  // ✅ Removed fetchUsers useEffect since we're not using assignment functionality
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const res = await api.get("/users")
+  //       const users = res.data.map((user: { id: string | number; name?: string }) => ({
+  //         id: String(user.id),
+  //         name: user.name || "Unknown User"
+  //       }))
+  //       setAllUsers(users)
+  //     } catch (err) {
+  //       console.error("Failed to fetch users:", err)
+  //       setAllUsers([])
+  //     }
+  //   }
+  //   fetchUsers()
+  // }, [])
 
   // ✅ Removed handleAssignUser function since we're hiding assignment
   // const handleAssignUser = async (userId: string | number) => {
