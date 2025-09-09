@@ -56,8 +56,8 @@ const BoardsPage = () => {
     const fetchBoards = async () => {
       try {
         const res = await api.get("/boards")
-        const filtered = res.data.filter((b: Board) => !b.isPrivate || b.ownerId === currentUserId)
-        setBoards(filtered)
+        // ✅ Backend now only returns boards owned by the authenticated user
+        setBoards(res.data)
       } catch (err) {
         console.error("Failed to fetch boards", err)
       }
@@ -89,10 +89,8 @@ const handleCreateBoard = async () => {
 
     // Refresh the board list
     const res = await api.get("/boards")
-    const filteredBoards = res.data.filter(
-      (b: Board) => !b.isPrivate || b.ownerId === (userData.id || currentUserId)
-    )
-    setBoards(filteredBoards)
+    // ✅ Backend now only returns boards owned by the authenticated user
+    setBoards(res.data)
 
     // Reset form
     setNewBoardName("")

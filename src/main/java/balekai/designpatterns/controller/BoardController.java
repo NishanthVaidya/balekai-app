@@ -128,8 +128,9 @@ public class BoardController {
             }
         });
 
+        // ✅ Only show boards created by the authenticated user
         List<Board> accessibleBoards = allBoards.stream()
-                .filter(board -> !board.isAPrivate() || (uid != null && uid.equals(board.getOwnerId())))
+                .filter(board -> uid != null && uid.equals(board.getOwnerId()))
                 .toList();
 
         return ResponseEntity.ok(accessibleBoards);
