@@ -207,8 +207,9 @@ export default function BoardPage() {
 
       await api.put(`/cards/${selectedCard.id}/move?listId=${targetList.id}`)
 
-      // ✅ Update state history
-      const stateHistoryEntry = `${selectedCard.currentState} → ${newState} at ${new Date().toLocaleString()}`
+      // ✅ Fetch updated card data from backend to get accurate state history
+      const updatedCardResponse = await api.get(`/cards/${selectedCard.id}`)
+      const updatedCard = updatedCardResponse.data
       
       const updatedBoard = { ...board }
       updatedBoard.lists = updatedBoard.lists.map((list) => {
@@ -216,25 +217,16 @@ export default function BoardPage() {
           return { ...list, cards: list.cards.filter((c) => c.id !== selectedCard.id) }
         }
         if (list.id === targetList.id) {
-          const updatedCard = { 
-            ...selectedCard, 
-            currentState: newState,
-            stateHistory: [...(selectedCard.stateHistory || []), stateHistoryEntry]
-          }
           return { ...list, cards: [...list.cards, updatedCard] }
         }
         return list
       })
 
       setBoard(updatedBoard)
-      setSelectedCard({ 
-        ...selectedCard, 
-        currentState: newState,
-        stateHistory: [...(selectedCard.stateHistory || []), stateHistoryEntry]
-      })
+      setSelectedCard(updatedCard)
       
-      // ✅ Update card history display
-      setCardHistory([...(selectedCard.stateHistory || []), stateHistoryEntry])
+      // ✅ Update card history display with accurate data from backend
+      setCardHistory(updatedCard.stateHistory || [])
     } catch (err: unknown) {
       console.error("Failed to change card state:", err)
       if (err && typeof err === 'object' && 'response' in err) {
@@ -714,13 +706,15 @@ export default function BoardPage() {
                 </div>
               </div>
             ) : (
-              <button
-                onClick={() => setShowAddList(true)}
-                className="bg-white/80 hover:bg-white border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center text-gray-500 hover:text-gray-700 h-24 transition-all duration-200 hover:border-indigo-300"
-              >
-                <span className="text-lg mr-2">+</span>
-                <span className="font-medium">Add another list</span>
-              </button>
+              // Hidden for now - Add another list button
+              // <button
+              //   onClick={() => setShowAddList(true)}
+              //   className="bg-white/80 hover:bg-white border border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center text-gray-500 hover:text-gray-700 h-24 transition-all duration-200 hover:border-indigo-300"
+              // >
+              //   <span className="text-lg mr-2">+</span>
+              //   <span className="font-medium">Add another list</span>
+              // </button>
+              null
             )}
           </div>
         </main>

@@ -9,7 +9,7 @@ public class PrivateBoardFactory {
         Board board = new Board();
         board.setName(name);
         board.setOwnerId(ownerId);
-        //board.setPrivate(true); // ✅ This is the crucial part
+        board.setAPrivate(true); // ✅ This is the crucial part
         return board;
     }
 }

@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:422456985301:task-definition/balekai-task-new:9",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:422456985301:task-definition/balekai-task:6",
     "containerDefinitions": [
         {
             "name": "balekai",
-            "image": "422456985301.dkr.ecr.us-east-1.amazonaws.com/balekai-backend@sha256:3d960e02d85e166d6d4f9e12a29ca6c737efadbf87ef0e703a129e88c6054ee4",
+            "image": "422456985301.dkr.ecr.us-east-1.amazonaws.com/balekai-backend:latest",
             "cpu": 0,
             "portMappings": [
                 {
@@ -15,8 +15,24 @@
             "essential": true,
             "environment": [
                 {
+                    "name": "FIREBASE_PROJECT_ID",
+                    "value": "trelllo-7a26a"
+                },
+                {
                     "name": "SPRING_DATASOURCE_URL",
                     "value": "jdbc:postgresql://balekai-postgres-new.cy7yeimaywkm.us-east-1.rds.amazonaws.com:5432/balekai_db"
+                },
+                {
+                    "name": "FIREBASE_CLIENT_EMAIL",
+                    "value": "firebase-adminsdk-fbsvc@trelllo-7a26a.iam.gserviceaccount.com"
+                },
+                {
+                    "name": "FIREBASE_PRIVATE_KEY",
+                    "value": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCg8WdQj7bUw3Uz\nNRxQGM9YMe01QqWcK9V49B5NQyM3QKzfUVOwJL3rGc4dlGMouuZeFfbp8TMaex93\nvjwUzxTtGIG6GrwLAUgYPAJKrFZR7cIOVwjStF+S1eBaSidXsBrFi4jPYmwMWlHu\n7QvyQT6eVL58wRYezy0n+kxT1oypqrJfut382LLe0IZHEAY2L3IAQYl5sBp3olqn\n+rkPeSxFi/0fI0RxugwYAW3LMB8iVwGNmUQsPFzIbBm1NDuAcrtENKDlW5eeiSGg\nYURL1xzKFwHZQwPWXFkhjrU7m+2lx0HY6pf5zADrf/u92fLQlv6zzwqy9w+ul2wS\n17qjP1O1AgMBAAECggEAT9F5eihUNe/b87H+4TB0wJo+OOBdTvckT3DOiGXoFLJ0\nKerlFOIb+HmbUesyRFRxBK9i/gH75MG0SQglNvK+v5mcWOaCZPjVPwOf5VXUF5zR\nVZhPjWQcVC/TLSRCn8f8dwVtK+D1kijHIrYYayR1gEOqFygRpuT70axeZ2Pr7gar\nM6LMDGTN5nvp7WisgVcxVj0r93b6NDwo5ryjmVXPh9LG/Cwkibrv8VbRKgqQyj27\nDlTUttPiGjGu7mKIAxIij8zIpTyQVRviKXfQQqvWg+uwBj7Fi8ZItsolo/1ZuuNY\n0waThSIqyY6hoFdkeUdqAwBszaDkQWwkwAvQFsZzHwKBgQDRMEFDaAXbcGu2Bq80\naBMrb6/QDcChGQd1Shi5ECPjI3W1cDe5aQl1STPJHWRO7MK5kQjjqn2LfdvXJrPh\ncQZRp6+Zy1UVbmkPPk2FJ/oYy9Y9JWC5DNUkAanHUrIxOu3R08tuoJlMWmvU8zhl\nKoG+OX9sKDCY/nsOH/WsdPVf+wKBgQDE9VD47yZ+Ww4SgioSaxqEkE4o3dLQlhY/\n9P5bJHButcL5RWBd7mQWyLN3YBw3UdbbfGK7varqJffICDjnELHBLUeZzEPMLT+s\nY9FoFE+PNX/04PIrIsiu9XUvRDQcPySgjgxgSr5ZYHuD0qcnoyViW8Fd3oXIwrgq\nxFdkSrncDwKBgQC15pwZnS7arls7IXzguU9SCgB7jjne3ADcQN5Wrm5GaONGLpqG\nI4wR7OGXFHPRHZgF/NQaBHq+/WZZJFJuyvWPs5zCw0jtJeE9XBPUofqb7UQST5pX\nz4zXjoqvxH0myfNa7iyLuiMTfd0eg5Cah+fiHeVri1cW8tLWaXwbxmhIWQKBgEi1\nz5i2oN1QvBc1GlcGVxnNNC1+Bo+eeMRPq372KtOUIlBnvjWvBiArI6XUQ1ZgzhLl\nDoYEdQ5PyfN8pZUX4qdQEfjDIdxEcBcyGmJz7RMPSxeZ24z1IGUGlKZIZXxwCxOC\nnSsHLNJN/gsiPzcw0WJIQVBoD7eXuul+5kxOEeMdAoGBAJUp9gVLWnsUQdia5qpA\ns0xVRon4HK/kN+Ws/dxVKZGKiWK+7+uiBsOySYK5oF6fuOdffFz1SYJi11czFA+q\nkMbe+5nivvxW3x7GE9UEj3y/zUaY3SspYZu6+yo3qITvHjbsU/tkHzuXbeYWzKlu\n8mu6iK2dMteuVX4d80UJ4OuF\n-----END PRIVATE KEY-----\n"
+                },
+                {
+                    "name": "JWT_SECRET",
+                    "value": "supersecretkeythatislongenough123456"
                 }
             ],
             "mountPoints": [],
@@ -24,21 +40,17 @@
             "secrets": [
                 {
                     "name": "SPRING_DATASOURCE_USERNAME",
-                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials-1ny2aE:username::"
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials:username::"
                 },
                 {
                     "name": "SPRING_DATASOURCE_PASSWORD",
-                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials-1ny2aE:password::"
-                },
-                {
-                    "name": "JWT_SECRET",
-                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-jwt-secret-7UGJfy"
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials:password::"
                 }
             ],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/balekai/backend-new",
+                    "awslogs-group": "/balekai/backend",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 }
@@ -46,11 +58,11 @@
             "systemControls": []
         }
     ],
-    "family": "balekai-task-new",
-    "taskRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-task-role-new",
-    "executionRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-exec-role-new",
+    "family": "balekai-task",
+    "taskRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-task-role",
+    "executionRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-exec-role",
     "networkMode": "awsvpc",
-    "revision": 9,
+    "revision": 6,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -68,9 +80,6 @@
         },
         {
             "name": "ecs.capability.secrets.asm.environment-variables"
-        },
-        {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
         },
         {
             "name": "com.amazonaws.ecs.capability.task-iam-role"
@@ -95,6 +104,6 @@
     ],
     "cpu": "512",
     "memory": "1024",
-    "registeredAt": "2025-09-06T23:54:02.098000-04:00",
+    "registeredAt": "2025-09-05T21:29:47.282000-04:00",
     "registeredBy": "arn:aws:iam::422456985301:user/balekai-master"
 }

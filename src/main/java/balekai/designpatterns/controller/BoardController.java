@@ -16,11 +16,13 @@ import balekai.designpatterns.model.User;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @RestController
 @RequestMapping("/boards")
 @Profile("!test") // Don't load this controller in test profile
+@Slf4j
 public class BoardController {
 
     @Autowired
@@ -128,11 +130,22 @@ public class BoardController {
             }
         });
 
-        // ✅ Only show boards created by the authenticated user
+        // ✅ Show public boards + own private boards
         List<Board> accessibleBoards = allBoards.stream()
-                .filter(board -> uid != null && uid.equals(board.getOwnerId()))
+                .filter(board -> {
+                    // Show public boards (not private) OR private boards owned by the user
+                    boolean isPublic = !board.isAPrivate();
+                    boolean isOwnedByUser = uid != null && uid.equals(board.getOwnerId());
+                    boolean hasAccess = isPublic || isOwnedByUser;
+                    
+                    log.debug("Board '{}' (ID: {}) - Owner: {}, Authenticated User: {}, Is Public: {}, Is Owned: {}, Has Access: {}", 
+                             board.getName(), board.getId(), board.getOwnerId(), uid, isPublic, isOwnedByUser, hasAccess);
+                    return hasAccess;
+                })
                 .toList();
 
+        log.info("Privacy filtering: Found {} accessible boards out of {} total boards for user {}", 
+                accessibleBoards.size(), allBoards.size(), uid);
         return ResponseEntity.ok(accessibleBoards);
     }
 
