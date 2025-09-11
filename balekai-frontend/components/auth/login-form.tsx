@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Link from "next/link"
 import api from "@/app/utils/api"
+import { setTokens } from "@/app/utils/token"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -41,10 +42,18 @@ export function LoginForm() {
         password: data.password,
       })
 
-      const token = response.data
+      const tokenData = response.data
       
-      // Store the JWT token from backend
-      localStorage.setItem("token", token)
+      // Handle both old format (string) and new format (object with accessToken and refreshToken)
+      if (typeof tokenData === 'string') {
+        // Old format - just access token
+        localStorage.setItem("token", tokenData)
+      } else if (tokenData.accessToken && tokenData.refreshToken) {
+        // New format - both access and refresh tokens
+        setTokens(tokenData.accessToken, tokenData.refreshToken)
+      } else {
+        throw new Error("Invalid token response format")
+      }
       
       // Store basic user info from login response
       localStorage.setItem("user", JSON.stringify({

@@ -137,11 +137,11 @@ public class AuthController {
             long step4Time = System.currentTimeMillis() - step4Start;
             log.info("[{}] REGISTER_STEP_4_COMPLETE - Database save took {}ms", requestId, step4Time);
 
-            // Step 5: Generate JWT
-            log.info("[{}] REGISTER_STEP_5 - Generating JWT token", requestId);
+            // Step 5: Generate JWT tokens
+            log.info("[{}] REGISTER_STEP_5 - Generating JWT tokens", requestId);
             long step5Start = System.currentTimeMillis();
             
-            String jwt = jwtService.generateToken(user.getEmail());
+            Map<String, String> tokens = jwtService.generateTokenPair(user.getEmail());
             
             long step5Time = System.currentTimeMillis() - step5Start;
             log.info("[{}] REGISTER_STEP_5_COMPLETE - JWT generation took {}ms", requestId, step5Time);
@@ -149,7 +149,7 @@ public class AuthController {
             long totalTime = System.currentTimeMillis() - startTime;
             log.info("[{}] REGISTER_SUCCESS - Total time: {}ms, UserId: {}", requestId, totalTime, userId);
             
-            return ResponseEntity.ok(jwt);
+            return ResponseEntity.ok(tokens);
             
         } catch (Exception e) {
             long totalTime = System.currentTimeMillis() - startTime;
@@ -250,8 +250,48 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        String jwt = jwtService.generateToken(user.getEmail());
-        return ResponseEntity.ok(jwt);
+        // Generate both access and refresh tokens
+        Map<String, String> tokens = jwtService.generateTokenPair(user.getEmail());
+        return ResponseEntity.ok(tokens);
+    }
+    
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.status(401).body("Refresh token is required");
+        }
+        
+        try {
+            // Validate the refresh token
+            if (jwtService.isTokenExpired(refreshToken)) {
+                return ResponseEntity.status(401).body("Refresh token has expired");
+            }
+            
+            if (!jwtService.isRefreshToken(refreshToken)) {
+                return ResponseEntity.status(401).body("Invalid refresh token type");
+            }
+            
+            // Extract username from refresh token
+            String username = jwtService.extractUsername(refreshToken);
+            
+            // Verify user still exists
+            Optional<User> userOptional = userRepository.findByEmail(username);
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(401).body("User not found");
+            }
+            
+            // Generate new token pair
+            Map<String, String> newTokens = jwtService.generateTokenPair(username);
+            
+            log.info("Token refreshed successfully for user: {}", username);
+            return ResponseEntity.ok(newTokens);
+            
+        } catch (Exception e) {
+            log.error("Token refresh failed: {}", e.getMessage());
+            return ResponseEntity.status(401).body("Invalid refresh token");
+        }
     }
 
     @DeleteMapping("/cleanup-test-users")
