@@ -26,6 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: "balekai",
+    description: "balekai - The task management app",
     card: "summary_large_image",
   },
 };
