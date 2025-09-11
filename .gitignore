@@ -37,3 +37,29 @@ node_modules
 frontend.zip
 frontend/node_modules/
 .vercel
+
+# Logs
+*.log
+
+# IDE metadata
+.idea/
+*.iml
+
+# Next.js build outputs (frontend backups or artifacts)
+.next/
+balekai-frontend/.next/
+frontend/.next/
+
+# Backups/archives
+archive/
+frontend-backup/
+*.zip
+*.tar.gz
+
+# TypeScript build info caches
+*.tsbuildinfo
+
+# Coverage/build outputs
+coverage/
+dist/
+build/
