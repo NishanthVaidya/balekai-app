@@ -39,7 +39,6 @@ export function LoginForm() {
       const response = await api.post("/auth/login", {
         email: data.email,
         password: data.password,
-        name: data.email.split("@")[0], // Use email prefix as name for login
       })
 
       const token = response.data
