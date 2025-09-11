@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// Force deployment to clear cache
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -15,12 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "balekai",
-  title: {
-    default: "balekai",
-    template: "%s | balekai",
-  },
+  title: "balekai",
   description: "balekai - The task management app",
+  generator: "v0.app",
   openGraph: {
     siteName: "balekai",
     title: "balekai",
