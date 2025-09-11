@@ -130,22 +130,12 @@ public class BoardController {
             }
         });
 
-        // ✅ Show public boards + own private boards
+        // ✅ Show ONLY boards created/owned by the authenticated user
         List<Board> accessibleBoards = allBoards.stream()
-                .filter(board -> {
-                    // Show public boards (not private) OR private boards owned by the user
-                    boolean isPublic = !board.isAPrivate();
-                    boolean isOwnedByUser = uid != null && uid.equals(board.getOwnerId());
-                    boolean hasAccess = isPublic || isOwnedByUser;
-                    
-                    log.debug("Board '{}' (ID: {}) - Owner: {}, Authenticated User: {}, Is Public: {}, Is Owned: {}, Has Access: {}", 
-                             board.getName(), board.getId(), board.getOwnerId(), uid, isPublic, isOwnedByUser, hasAccess);
-                    return hasAccess;
-                })
+                .filter(board -> uid != null && uid.equals(board.getOwnerId()))
                 .toList();
 
-        log.info("Privacy filtering: Found {} accessible boards out of {} total boards for user {}", 
-                accessibleBoards.size(), allBoards.size(), uid);
+        log.info("Owner filtering: Found {} boards owned by user {}", accessibleBoards.size(), uid);
         return ResponseEntity.ok(accessibleBoards);
     }
 
@@ -190,9 +180,25 @@ public class BoardController {
     // ✅ GET BOARD BY ID
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public Board getBoard(@PathVariable Long id) {
+    public ResponseEntity<?> getBoard(@PathVariable Long id, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Board not found"));
+        
+        // Check if user has access to this board
+        if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+            return ResponseEntity.status(403).body("Access denied: Cannot access private boards you don't own");
+        }
         
         // Initialize lazy collections to avoid Hibernate lazy loading issues
         if (board.getLists() != null) {
@@ -217,24 +223,62 @@ public class BoardController {
             });
         }
         
-        return board;
+        return ResponseEntity.ok(board);
     }
 
     // ✅ UPDATE BOARD
     @PutMapping("/{id}")
-    public Board updateBoard(@PathVariable Long id, @RequestBody Board board) {
+    public ResponseEntity<?> updateBoard(@PathVariable Long id, @RequestBody Board board, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Board existingBoard = boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Board not found"));
+        
+        // Check if user has access to update this board
+        if (existingBoard.isAPrivate() && !existingBoard.getOwnerId().equals(authenticatedUser.getId())) {
+            return ResponseEntity.status(403).body("Access denied: Cannot update private boards you don't own");
+        }
+        
         existingBoard.setName(board.getName());
-        existingBoard.setOwnerId(board.getOwnerId());
+        // Don't allow changing ownerId - keep the original owner
         existingBoard.setOwnerName(board.getOwnerName());
-        return boardRepository.save(existingBoard);
+        Board updatedBoard = boardRepository.save(existingBoard);
+        return ResponseEntity.ok(updatedBoard);
     }
 
     // ✅ DELETE BOARD
     @DeleteMapping("/{id}")
-    public void deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<?> deleteBoard(@PathVariable Long id, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+        
+        // Check if user has access to delete this board
+        if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+            return ResponseEntity.status(403).body("Access denied: Cannot delete private boards you don't own");
+        }
+        
         boardRepository.deleteById(id);
+        return ResponseEntity.ok("Board deleted successfully");
     }
 
 

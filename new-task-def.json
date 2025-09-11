@@ -1,59 +1,52 @@
 {
-  "containerDefinitions": [
-    {
-      "name": "balekai",
-      "image": "422456985301.dkr.ecr.us-east-1.amazonaws.com/balekai-backend:latest",
-      "cpu": 0,
-      "portMappings": [
+    "family": "balekai-task-new",
+    "taskRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-task-role-new",
+    "executionRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-exec-role-new",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "512",
+    "memory": "1024",
+    "containerDefinitions": [
         {
-          "containerPort": 8080,
-          "hostPort": 8080,
-          "protocol": "tcp"
+            "name": "balekai",
+            "image": "422456985301.dkr.ecr.us-east-1.amazonaws.com/balekai-backend:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "SPRING_DATASOURCE_URL",
+                    "value": "jdbc:postgresql://balekai-postgres-new.cy7yeimaywkm.us-east-1.rds.amazonaws.com:5432/balekai_db"
+                }
+            ],
+            "secrets": [
+                {
+                    "name": "SPRING_DATASOURCE_USERNAME",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials-username-new-Hxtz1v"
+                },
+                {
+                    "name": "SPRING_DATASOURCE_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials-password-new-GzgYBv"
+                },
+                {
+                    "name": "JWT_SECRET",
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-jwt-secret"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/balekai/backend-new",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
         }
-      ],
-      "essential": true,
-      "environment": [
-        {
-          "name": "SPRING_DATASOURCE_URL",
-          "value": "jdbc:postgresql://balekai-postgres-new.cy7yeimaywkm.us-east-1.rds.amazonaws.com:5432/balekai_db"
-        }
-      ],
-      "mountPoints": [],
-      "volumesFrom": [],
-      "secrets": [
-        {
-          "name": "SPRING_DATASOURCE_USERNAME",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials-1ny2aE:username::"
-        },
-        {
-          "name": "SPRING_DATASOURCE_PASSWORD",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-db-credentials-1ny2aE:password::"
-        },
-        {
-          "name": "JWT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-jwt-secret-7UGJfy"
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/balekai/backend-new",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
-        }
-      },
-      "systemControls": []
-    }
-  ],
-  "family": "balekai-task-new",
-  "taskRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-task-role-new",
-  "executionRoleArn": "arn:aws:iam::422456985301:role/balekai-ecs-exec-role-new",
-  "networkMode": "awsvpc",
-  "volumes": [],
-  "placementConstraints": [],
-  "requiresCompatibilities": [
-    "FARGATE"
-  ],
-  "cpu": "512",
-  "memory": "1024"
+    ]
 }

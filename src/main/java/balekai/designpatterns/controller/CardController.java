@@ -116,11 +116,35 @@ public class CardController {
     // 🆕 Get All Cards
     @GetMapping
     @Transactional(readOnly = true)
-    public List<Card> getAllCards() {
+    public ResponseEntity<?> getAllCards(HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         List<Card> cards = cardRepository.findAll();
         
+        // Filter cards based on user access (only show cards from public boards or user's own private boards)
+        List<Card> accessibleCards = cards.stream()
+            .filter(card -> {
+                TrelloList list = card.getList();
+                if (list != null && list.getBoard() != null) {
+                    Board board = list.getBoard();
+                    // Show cards from public boards or private boards owned by the user
+                    return !board.isAPrivate() || board.getOwnerId().equals(authenticatedUser.getId());
+                }
+                return true; // Show cards without board association
+            })
+            .toList();
+        
         // Initialize lazy collections to avoid Hibernate lazy loading issues
-        cards.forEach(card -> {
+        accessibleCards.forEach(card -> {
             if (card.getAssignedUser() != null) {
                 card.getAssignedUser().getName(); // Force initialization
             }
@@ -132,39 +156,113 @@ public class CardController {
             }
         });
         
-        return cards;
+        return ResponseEntity.ok(accessibleCards);
     }
 
     // 🆕 Delete Card by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCard(@PathVariable Long id) {
+    public ResponseEntity<?> deleteCard(@PathVariable Long id, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + id));
+
+        // Check if user has access to delete this card
+        TrelloList list = card.getList();
+        if (list != null && list.getBoard() != null) {
+            Board board = list.getBoard();
+            if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+                return ResponseEntity.status(403).body("Access denied: Cannot delete cards from private boards you don't own");
+            }
+        }
+
         cardRepository.delete(card);
         return ResponseEntity.ok("Card deleted successfully!");
     }
 
     // ✅ Transition Card State
     @PutMapping("/{cardId}/transition")
-    public ResponseEntity<String> transitionCardState(
+    public ResponseEntity<?> transitionCardState(
             @PathVariable Long cardId,
-            @RequestParam String newState
+            @RequestParam String newState,
+            HttpServletRequest request
     ) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
+
+        // Check if user has access to modify this card
+        TrelloList list = card.getList();
+        if (list != null && list.getBoard() != null) {
+            Board board = list.getBoard();
+            if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+                return ResponseEntity.status(403).body("Access denied: Cannot modify cards in private boards you don't own");
+            }
+        }
+
         cardService.transitionCardState(cardId, newState);
         return ResponseEntity.ok("Card state updated successfully!");
     }
 
     // ✅ Move Card to Another List
     @PutMapping("/{cardId}/move")
-    public ResponseEntity<String> moveCardToList(
+    public ResponseEntity<?> moveCardToList(
             @PathVariable Long cardId,
-            @RequestParam Long listId
+            @RequestParam Long listId,
+            HttpServletRequest request
     ) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
 
+        // Check if user has access to modify this card
+        TrelloList currentList = card.getList();
+        if (currentList != null && currentList.getBoard() != null) {
+            Board board = currentList.getBoard();
+            if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+                return ResponseEntity.status(403).body("Access denied: Cannot move cards in private boards you don't own");
+            }
+        }
+
         TrelloList newList = trelloListRepository.findById(listId)
                 .orElseThrow(() -> new RuntimeException("List not found with id: " + listId));
+
+        // Check if the new list is in the same board or user has access to the new list's board
+        if (newList.getBoard() != null) {
+            Board newBoard = newList.getBoard();
+            if (newBoard.isAPrivate() && !newBoard.getOwnerId().equals(authenticatedUser.getId())) {
+                return ResponseEntity.status(403).body("Access denied: Cannot move cards to private boards you don't own");
+            }
+        }
 
         card.setList(newList);
         cardRepository.save(card);
@@ -267,9 +365,29 @@ public class CardController {
     // ✅ View Card Logs/History
     @GetMapping("/{cardId}/history")
     @Transactional(readOnly = true)
-    public ResponseEntity<List<String>> getCardHistory(@PathVariable Long cardId) {
+    public ResponseEntity<?> getCardHistory(@PathVariable Long cardId, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found with id: " + cardId));
+
+        // Check if user has access to view this card's history
+        TrelloList list = card.getList();
+        if (list != null && list.getBoard() != null) {
+            Board board = list.getBoard();
+            if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+                return ResponseEntity.status(403).body("Access denied: Cannot view history of cards in private boards you don't own");
+            }
+        }
 
         // Force initialization of lazy collections to prevent Hibernate lazy loading issues
         if (card.getStateHistory() != null) {
@@ -279,12 +397,33 @@ public class CardController {
         return ResponseEntity.ok(card.getStateHistory());
     }
     @PutMapping("/{cardId}/update-metadata")
-    public ResponseEntity<Card> updateCardMetadata(
+    public ResponseEntity<?> updateCardMetadata(
             @PathVariable Long cardId,
-            @RequestBody Map<String, String> updates
+            @RequestBody Map<String, String> updates,
+            HttpServletRequest request
     ) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("Card not found"));
+
+        // Check if user has access to modify this card
+        TrelloList list = card.getList();
+        if (list != null && list.getBoard() != null) {
+            Board board = list.getBoard();
+            if (board.isAPrivate() && !board.getOwnerId().equals(authenticatedUser.getId())) {
+                return ResponseEntity.status(403).body("Access denied: Cannot modify cards in private boards you don't own");
+            }
+        }
 
         if (updates.containsKey("title")) {
             card.setTitle(updates.get("title"));

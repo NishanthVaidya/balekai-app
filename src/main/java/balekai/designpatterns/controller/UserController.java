@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,13 +31,35 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<?> getUsers(HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         List<User> users = userRepository.findAll();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable String id) {
+    public ResponseEntity<?> getUserById(@PathVariable String id, HttpServletRequest request) {
+        // Get authenticated user
+        String userEmail = (String) request.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
@@ -46,7 +69,18 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody UserUpdateRequest request, HttpServletRequest httpRequest) {
+        // Get authenticated user
+        String userEmail = (String) httpRequest.getAttribute("authenticatedUserEmail");
+        if (userEmail == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User authenticatedUser = userRepository.findByEmail(userEmail).orElse(null);
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(401).body("User not found");
+        }
+
         log.info("Updating user {} with data: name={}, email={}", id, request.getName(), request.getEmail());
         
         try {
