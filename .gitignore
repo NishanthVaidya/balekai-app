@@ -47,7 +47,6 @@ frontend/node_modules/
 
 # Next.js build outputs (frontend backups or artifacts)
 .next/
-balekai-frontend/.next/
 frontend/.next/
 
 # Backups/archives
