@@ -45,22 +45,43 @@ export function RegisterForm() {
       })
 
       const tokenData = response.data
-
-      // Preferred new format: tokens plus user payload
-      if (tokenData && tokenData.accessToken && tokenData.refreshToken && tokenData.user) {
-        setTokens(tokenData.accessToken, tokenData.refreshToken)
-        localStorage.setItem("user", JSON.stringify(tokenData.user))
-      } else if (typeof tokenData === 'string') {
-        // Legacy fallback
+      
+      // Handle both old format (string) and new format (object with accessToken and refreshToken)
+      if (typeof tokenData === 'string') {
+        // Old format - just access token
         localStorage.setItem("token", tokenData)
-        localStorage.setItem("user", JSON.stringify({ name: data.name, email: data.email }))
-      } else if (tokenData && tokenData.accessToken && tokenData.refreshToken) {
-        // Tokens without user payload: keep minimal user as fallback
+      } else if (tokenData.accessToken && tokenData.refreshToken) {
+        // New format - both access and refresh tokens
         setTokens(tokenData.accessToken, tokenData.refreshToken)
-        localStorage.setItem("user", JSON.stringify({ name: data.name, email: data.email }))
       } else {
         throw new Error("Invalid token response format")
       }
+      
+      // Store basic user info from registration
+      localStorage.setItem("user", JSON.stringify({
+        name: data.name,
+        email: data.email,
+      }))
+      
+      // Fetch user data from backend to get complete user information including ID (optional)
+      // This is now non-blocking and won't cause registration failures
+      api.get("/users")
+        .then(userResponse => {
+          const users = userResponse.data
+          const currentUser = users.find((user: { id: string; email: string; name: string }) => user.email === data.email)
+          
+          if (currentUser) {
+            localStorage.setItem("user", JSON.stringify({
+              id: currentUser.id,
+              email: currentUser.email,
+              name: currentUser.name,
+            }))
+          }
+        })
+        .catch(userError => {
+          console.warn("Could not fetch user data:", userError)
+          // User data fetch failed, but registration still succeeds
+        })
 
       router.push("/boards")
     } catch (error: unknown) {

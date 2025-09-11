@@ -149,16 +149,8 @@ public class AuthController {
             long totalTime = System.currentTimeMillis() - startTime;
             log.info("[{}] REGISTER_SUCCESS - Total time: {}ms, UserId: {}", requestId, totalTime, userId);
             
-            // Return tokens along with the created user object
-            return ResponseEntity.ok(Map.of(
-                "accessToken", tokens.get("accessToken"),
-                "refreshToken", tokens.get("refreshToken"),
-                "user", Map.of(
-                    "id", user.getId(),
-                    "name", user.getName(),
-                    "email", user.getEmail()
-                )
-            ));
+            // Return only tokens (previous behavior)
+            return ResponseEntity.ok(tokens);
             
         } catch (Exception e) {
             long totalTime = System.currentTimeMillis() - startTime;
@@ -262,16 +254,8 @@ public class AuthController {
         // Generate both access and refresh tokens
         Map<String, String> tokens = jwtService.generateTokenPair(user.getEmail());
         
-        // Return tokens and user payload
-        return ResponseEntity.ok(Map.of(
-            "accessToken", tokens.get("accessToken"),
-            "refreshToken", tokens.get("refreshToken"),
-            "user", Map.of(
-                "id", user.getId(),
-                "name", user.getName(),
-                "email", user.getEmail()
-            )
-        ));
+        // Return only tokens (previous behavior)
+        return ResponseEntity.ok(tokens);
     }
     
     @PostMapping("/refresh")
