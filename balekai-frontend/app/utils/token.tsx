@@ -33,7 +33,7 @@ export const isTokenExpired = (token: string): boolean => {
     const payload = JSON.parse(atob(token.split('.')[1]));
     const currentTime = Date.now() / 1000;
     return payload.exp && payload.exp < currentTime;
-  } catch (error) {
+  } catch {
     return true; // If we can't parse the token, consider it expired
   }
 };
@@ -42,7 +42,7 @@ export const getTokenExpirationTime = (token: string): number | null => {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.exp ? payload.exp * 1000 : null; // Convert to milliseconds
-  } catch (error) {
+  } catch {
     return null;
   }
 };
