@@ -13,19 +13,49 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
+
 export const metadata: Metadata = {
-  title: "balekai",
-  description: "balekai - The task management app",
-  generator: "v0.app",
+  title: {
+    default: "balekai",
+    template: "%s | balekai",
+  },
+  description: "balekai - The task management app that helps you organize and track your projects efficiently",
+  generator: "Next.js",
+  applicationName: "balekai",
+  keywords: ["task management", "productivity", "boards", "organization"],
+  authors: [{ name: "balekai" }],
+  creator: "balekai",
+  publisher: "balekai",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://balekai.com"),
   openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://balekai.com",
     siteName: "balekai",
-    title: "balekai",
-    description: "balekai - The task management app",
+    title: "balekai - Task Management App",
+    description: "The task management app that helps you organize and track your projects efficiently",
   },
   twitter: {
-    title: "balekai",
-    description: "balekai - The task management app",
     card: "summary_large_image",
+    title: "balekai - Task Management App",
+    description: "The task management app that helps you organize and track your projects efficiently",
+    creator: "@balekai",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 }
 
