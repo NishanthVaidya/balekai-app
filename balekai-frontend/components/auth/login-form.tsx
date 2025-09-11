@@ -47,33 +47,31 @@ export function LoginForm() {
       // Store the JWT token from backend
       localStorage.setItem("token", token)
       
-      // Fetch user data from backend to get complete user information
-      try {
-        const userResponse = await api.get("/users")
-        const users = userResponse.data
-        const currentUser = users.find((user: { id: string; email: string; name: string }) => user.email === data.email)
-        
-        if (currentUser) {
-          localStorage.setItem("user", JSON.stringify({
-            id: currentUser.id,
-            email: currentUser.email,
-            name: currentUser.name,
-          }))
-        } else {
-          // Fallback if user not found
-          localStorage.setItem("user", JSON.stringify({
-            email: data.email,
-            name: data.email.split("@")[0],
-          }))
-        }
-      } catch (userError) {
-        console.warn("Could not fetch user data:", userError)
-        // Fallback if user fetch fails
-        localStorage.setItem("user", JSON.stringify({
-          email: data.email,
-          name: data.email.split("@")[0],
-        }))
-      }
+      // Store basic user info from login response
+      localStorage.setItem("user", JSON.stringify({
+        email: data.email,
+        name: data.email.split("@")[0],
+      }))
+      
+      // Fetch user data from backend to get complete user information (optional)
+      // This is now non-blocking and won't cause login failures
+      api.get("/users")
+        .then(userResponse => {
+          const users = userResponse.data
+          const currentUser = users.find((user: { id: string; email: string; name: string }) => user.email === data.email)
+          
+          if (currentUser) {
+            localStorage.setItem("user", JSON.stringify({
+              id: currentUser.id,
+              email: currentUser.email,
+              name: currentUser.name,
+            }))
+          }
+        })
+        .catch(userError => {
+          console.warn("Could not fetch user data:", userError)
+          // User data fetch failed, but login still succeeds
+        })
 
       router.push("/boards")
     } catch (error: unknown) {

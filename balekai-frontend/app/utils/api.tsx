@@ -27,9 +27,15 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       if (typeof window !== "undefined") {
-        localStorage.removeItem("token")
-        console.warn("Unauthorized. Redirecting to login.")
-        window.location.href = "/login"
+        // Only redirect to login if we're not already on the login page
+        // This prevents infinite redirect loops
+        const currentPath = window.location.pathname
+        if (currentPath !== "/login" && currentPath !== "/register") {
+          localStorage.removeItem("token")
+          localStorage.removeItem("user")
+          console.warn("Unauthorized. Redirecting to login.")
+          window.location.href = "/login"
+        }
       }
     }
     return Promise.reject(error)
