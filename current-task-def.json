@@ -28,11 +28,11 @@
                 },
                 {
                     "name": "FIREBASE_PRIVATE_KEY",
-                    "value": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCg8WdQj7bUw3Uz\nNRxQGM9YMe01QqWcK9V49B5NQyM3QKzfUVOwJL3rGc4dlGMouuZeFfbp8TMaex93\nvjwUzxTtGIG6GrwLAUgYPAJKrFZR7cIOVwjStF+S1eBaSidXsBrFi4jPYmwMWlHu\n7QvyQT6eVL58wRYezy0n+kxT1oypqrJfut382LLe0IZHEAY2L3IAQYl5sBp3olqn\n+rkPeSxFi/0fI0RxugwYAW3LMB8iVwGNmUQsPFzIbBm1NDuAcrtENKDlW5eeiSGg\nYURL1xzKFwHZQwPWXFkhjrU7m+2lx0HY6pf5zADrf/u92fLQlv6zzwqy9w+ul2wS\n17qjP1O1AgMBAAECggEAT9F5eihUNe/b87H+4TB0wJo+OOBdTvckT3DOiGXoFLJ0\nKerlFOIb+HmbUesyRFRxBK9i/gH75MG0SQglNvK+v5mcWOaCZPjVPwOf5VXUF5zR\nVZhPjWQcVC/TLSRCn8f8dwVtK+D1kijHIrYYayR1gEOqFygRpuT70axeZ2Pr7gar\nM6LMDGTN5nvp7WisgVcxVj0r93b6NDwo5ryjmVXPh9LG/Cwkibrv8VbRKgqQyj27\nDlTUttPiGjGu7mKIAxIij8zIpTyQVRviKXfQQqvWg+uwBj7Fi8ZItsolo/1ZuuNY\n0waThSIqyY6hoFdkeUdqAwBszaDkQWwkwAvQFsZzHwKBgQDRMEFDaAXbcGu2Bq80\naBMrb6/QDcChGQd1Shi5ECPjI3W1cDe5aQl1STPJHWRO7MK5kQjjqn2LfdvXJrPh\ncQZRp6+Zy1UVbmkPPk2FJ/oYy9Y9JWC5DNUkAanHUrIxOu3R08tuoJlMWmvU8zhl\nKoG+OX9sKDCY/nsOH/WsdPVf+wKBgQDE9VD47yZ+Ww4SgioSaxqEkE4o3dLQlhY/\n9P5bJHButcL5RWBd7mQWyLN3YBw3UdbbfGK7varqJffICDjnELHBLUeZzEPMLT+s\nY9FoFE+PNX/04PIrIsiu9XUvRDQcPySgjgxgSr5ZYHuD0qcnoyViW8Fd3oXIwrgq\nxFdkSrncDwKBgQC15pwZnS7arls7IXzguU9SCgB7jjne3ADcQN5Wrm5GaONGLpqG\nI4wR7OGXFHPRHZgF/NQaBHq+/WZZJFJuyvWPs5zCw0jtJeE9XBPUofqb7UQST5pX\nz4zXjoqvxH0myfNa7iyLuiMTfd0eg5Cah+fiHeVri1cW8tLWaXwbxmhIWQKBgEi1\nz5i2oN1QvBc1GlcGVxnNNC1+Bo+eeMRPq372KtOUIlBnvjWvBiArI6XUQ1ZgzhLl\nDoYEdQ5PyfN8pZUX4qdQEfjDIdxEcBcyGmJz7RMPSxeZ24z1IGUGlKZIZXxwCxOC\nnSsHLNJN/gsiPzcw0WJIQVBoD7eXuul+5kxOEeMdAoGBAJUp9gVLWnsUQdia5qpA\ns0xVRon4HK/kN+Ws/dxVKZGKiWK+7+uiBsOySYK5oF6fuOdffFz1SYJi11czFA+q\nkMbe+5nivvxW3x7GE9UEj3y/zUaY3SspYZu6+yo3qITvHjbsU/tkHzuXbeYWzKlu\n8mu6iK2dMteuVX4d80UJ4OuF\n-----END PRIVATE KEY-----\n"
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-firebase-private-key-new-L9mgwB"
                 },
                 {
                     "name": "JWT_SECRET",
-                    "value": "supersecretkeythatislongenough123456"
+                    "valueFrom": "arn:aws:secretsmanager:us-east-1:422456985301:secret:balekai-jwt-secret-new-dLHNQ8"
                 }
             ],
             "mountPoints": [],
